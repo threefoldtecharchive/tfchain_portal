@@ -12,19 +12,19 @@
           v-on="on"
           :loading="loading"
         >
-          Create Twin
+          Create Farm
         </v-btn>
       </template>
 
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
-          Create Twin
+          Create Farm
         </v-card-title>
 
         <v-card-text>
           <v-text-field
-            label="Twin IP"
-            v-model="twinIP"
+            label="Farm Name"
+            v-model="name"
             required
           ></v-text-field>
         </v-card-text>
@@ -36,7 +36,7 @@
           <v-btn
             color="primary"
             text
-            @click="createTwin()"
+            @click="createFarm()"
           >
             Create
           </v-btn>
@@ -58,14 +58,14 @@ export default {
   data: () => {
     return {
       open: false,
-      twinIP: '',
+      name: '',
     }
   },
   methods: {
-    createTwin() {
+    createFarm() {
       this.open = false
-      console.log(this.twinIP)
-      this.create(this.twinIP)
+      console.log(this.name)
+      this.create(this.name)
     }
   }
 };

@@ -10,8 +10,12 @@
           <p>balance: {{account.balance}} TFT</p>
         </div>
         <div class="actions">
-          <v-btn v-if="account.balance !== 0" color="primary" @click="routeToAccount(account.address)">Enter</v-btn>
-          <v-btn v-else color="secondary" @click="activateAccount(account.address)">Activate Account</v-btn>
+          <v-btn  
+            color="primary" 
+            @click="routeToAccount(account.address, account)"
+          >
+            Enter
+          </v-btn>
         </div>
       </v-col>
     </v-row>
@@ -31,7 +35,6 @@
 
 <script>
 import { mapState } from 'vuex'
-import { activateThroughActivationService } from '../lib/activation' 
 
   export default {
     name: 'Accounts',
@@ -40,20 +43,9 @@ import { activateThroughActivationService } from '../lib/activation'
       'snackbar'
     ]),
     methods: {
-      routeToAccount(address) {
-        this.$router.push({ name: 'Account', params: { accountID: address } })
+      routeToAccount(address, account) {
+        this.$router.push({ name: 'Account', params: { accountID: address, account: account } })
       },
-      activateAccount(address) {
-        this.snackbarMessage = 'Activation Success!'
-        activateThroughActivationService(address)
-          .then(() => {
-            setTimeout(() => this.$store.dispatch('getAccounts'), 7000)
-          })
-          .catch(err => {
-            console.log(err)
-            this.snackbarMessage = 'Activation failed!'
-          })
-      }
     },
     mounted () {
       this.fetchAccountsInterval = setInterval(() => {

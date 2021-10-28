@@ -3,7 +3,7 @@
     <h3>Twins</h3>
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
-        <div v-if="twin">
+        <div v-if="twin && twin.id !== 0">
           <p>twinID: {{twinID}}</p>
           <p>ip: {{ decodeHex(twin.ip) }}</p>
           <p>accountID: {{ twin.account_id }}</p>
@@ -64,6 +64,7 @@ export default {
     this.twinID = twinID
     const twin = await getTwin(this.$store.state.api, twinID)
     this.twin = twin
+    console.log(twin)
     const farm = await getFarm(this.$store.state.api, twinID)
     if (farm.length > 0) {
       this.farm = farm[0]

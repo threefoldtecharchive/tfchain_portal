@@ -1,7 +1,60 @@
 <template>
+  <div class="accounts-app">
+
+  <v-navigation-drawer
+    permanent
+    height="100vh"
+  >
+    <v-list-item>
+      <v-list-item-content>
+        <v-list-item-title class="text-h6">
+          Account Management
+        </v-list-item-title>
+        <v-list-item-subtitle>
+          {{ this.$route.params.accountID }}
+        </v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+
+    <v-divider></v-divider>
+
+    <v-list
+      dense
+      nav
+    >
+      <!-- <v-list-item link @click="selectedItem = 'wallet'">
+        <v-list-item-icon>
+          <v-icon>mdi-wallet</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title>Wallet</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item> -->
+      <v-list-item link @click="selectedItem = 'twins'">
+        <v-list-item-icon>
+          <v-icon>mdi-account-multiple</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title>Twins</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+      <v-list-item link @click="selectedItem = 'farms'">
+        <v-list-item-icon>
+          <v-icon>mdi-account-multiple</v-icon>
+        </v-list-item-icon>
+
+        <v-list-item-content>
+          <v-list-item-title>Farms</v-list-item-title>
+        </v-list-item-content>
+      </v-list-item>
+    </v-list>
+  </v-navigation-drawer>
+  
   <v-container>
-    <Twin />
-    <Farm />
+    <Twin v-if="selectedItem === 'twins'" />
+    <Farm v-if="selectedItem === 'farms'" />
     <v-overlay
       :absolute="true"
       :value="!activated"
@@ -16,6 +69,8 @@
       </v-btn>
     </v-overlay>
   </v-container>
+
+  </div>
 </template>
 
 <script>
@@ -35,21 +90,27 @@ export default {
 
   computed: {
     activated () {
-      return this.$route.params.account.balance > 0 || this.activationCompleted
+      if (this.$route.params.account) {
+        return this.$route.params.account.balance > 0 || this.activationCompleted
+      } else {
+        return false
+      }
     }
   },
 
   data () {
     return {
+      selectedItem: 'twins',
       loadingActivation: false,
       activationCompleted: false,
-      balance: this.$route.params.account.balance
+      balance: this.$route.params.account.balance || 0
     }
   },
 
   ...mapGetters(['api']),
 
   async mounted () {
+    if (!this.$store.state.api) this.$router.push('/')
     this.$store.dispatch('getAPI')
   },
 
@@ -73,6 +134,10 @@ export default {
 }
 </script>
 <style scoped>
+.accounts-app {
+  display: flex;
+  flex-direction: row;
+}
 .account {
   background-color: rgb(255, 255, 255);
   height: 100%;

@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div v-if="twin && twin.id !== 0">
     <h3>Twins</h3>
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
-        <div v-if="twin && twin.id !== 0">
+        <div>
           <p>twinID: {{twinID}}</p>
           <p>ip: {{ decodeHex(twin.ip) }}</p>
           <p>accountID: {{ twin.account_id }}</p>
@@ -11,24 +11,39 @@
             <!-- <v-btn color="primary" @click="routeToAccount(account.address)">Enter</v-btn> -->
           </div>
         </div>
-        <div v-else>
-          <p v-if="!loadingCreateTwin">No Twin yet</p>
+      </v-col>
+    </v-row>
+
+    <h3>Balance</h3>
+    <v-row class="no-gutters">
+      <v-col cols="12" sm="12" class="account">
+        <div>
+          <p>Balance: {{ balance }} TFT</p>
           <div class="actions">
-            <CreateTwin
-              :create="createTwinFromAccount"
-              :loading="loadingCreateTwin"
-            />
+            <Deposit :twinID="this.twinID"/>
+            <v-btn color="primary" @click="withdraw()">Withdraw to Stellar</v-btn>
           </div>
         </div>
       </v-col>
     </v-row>
+  </div>
+  <div v-else>
+    <p v-if="!loadingCreateTwin">No Twin yet</p>
+    <div class="actions">
+      <CreateTwin
+        :create="createTwinFromAccount"
+        :loading="loadingCreateTwin"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import CreateTwin from './createTwin.vue'
+import Deposit from './bridge/deposit.vue'
 import { getTwin, getTwinID, createTwin } from '../lib/twin'
+import { getBalance } from '../lib/balance'
 import { hex2a } from '../lib/util'
 
 export default {
@@ -36,22 +51,23 @@ export default {
 
   components: {
     CreateTwin,
+    Deposit
   },
 
   ...mapGetters(['api']),
 
   async mounted () {
-    const twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
-    this.twinID = twinID
-    const twin = await getTwin(this.$store.state.api, twinID)
-    this.twin = twin
+    this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
+    this.twin = await getTwin(this.$store.state.api, this.twinID)
+    this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7
   },
 
   data () {
     return {
       twinID: 0,
       twin: undefined,
-      loadingCreateTwin: false
+      loadingCreateTwin: false,
+      balance: 0
     }
   },
 
@@ -94,6 +110,12 @@ export default {
           })
         }
       })
+    },
+    deposit () {
+
+    },
+    withdraw () {
+
     }
   }
 }
@@ -102,6 +124,7 @@ export default {
 .account {
   background-color: rgb(255, 255, 255);
   height: 100%;
+  width: 100%;
   margin-top: 0.2em;
   margin-bottom: 1em;
   border-radius: 0.3em;
@@ -112,5 +135,14 @@ export default {
 }
 .account p {
   margin-bottom: 0px !important;
+}
+.actions {
+  display: flex !important;
+  justify-content: flex-start !important;
+  margin-top: 1em;
+}
+
+.actions button {
+  margin-right: 1em;
 }
 </style>

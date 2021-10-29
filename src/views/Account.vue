@@ -59,14 +59,16 @@
       :absolute="true"
       :value="!activated"
     >
-      <p>Activate your account in order to continue</p>
-      <v-btn 
-        color="secondary" 
-        @click="activateAccount()"
-        :loading="loadingActivation"
-      >
-        Activate Account
-      </v-btn>
+      <div class="overlay">
+        <p>Activate your account in order to continue</p>
+        <v-btn 
+          color="secondary" 
+          @click="activateAccount()"
+          :loading="loadingActivation"
+        >
+          Activate Account
+        </v-btn>
+      </div>
     </v-overlay>
   </v-container>
 
@@ -151,5 +153,8 @@ export default {
 }
 .account p {
   margin-bottom: 0px !important;
+}
+.overlay button {
+  width: 100%;
 }
 </style>

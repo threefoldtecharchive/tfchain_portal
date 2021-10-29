@@ -106,6 +106,10 @@ export default {
                   this.twin = twin
                   this.twinID = twin.id
                   this.loadingCreateTwin = false
+                  getBalance(this.$store.state.api, this.$route.params.accountID)
+                    .then(balance => {
+                      this.balance = balance / 1e7
+                    })
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Twin creation failed!')
@@ -139,7 +143,7 @@ export default {
               this.loadingWithdraw = false
               getBalance(this.$store.state.api, this.$route.params.accountID)
                 .then(balance => {
-                  this.balance = balance
+                  this.balance = balance / 1e7
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Withdraw failed!')

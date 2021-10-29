@@ -1,19 +1,25 @@
 import {
   web3FromAddress,
 } from '@polkadot/extension-dapp';
+import { hex2a } from './util'
 
 export async function getFarm (api, twinID) {
   const farms = await api.query.tfgridModule.farms.entries()
   console.log(farms)
-  const farm = farms.filter(farm => {
+  const twinFarms = farms.filter(farm => {
     if (farm[1].toJSON().twin_id === twinID) {
       return farm
     }
   })
 
-  if (farms.length > 0) {
-    return farm[0][1].toJSON()
-  }
+  return twinFarms.map(farm => {
+    const parsedFarm = farm[1].toJSON()
+
+    return {
+      ...parsedFarm,
+      name: hex2a(parsedFarm.name)
+    }
+  })
 }
 
 export async function getFarmByID (api, id) {

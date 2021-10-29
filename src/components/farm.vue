@@ -1,30 +1,33 @@
 <template>
   <div>
   <h3>Farm</h3>
-    <v-row class="no-gutters">
-      <v-col cols="12" sm="12" class="account">
-      <div v-if="farm">
-        <p>farmID: {{farm.id}}</p>
-        <p>name: {{ decodeHex(farm.name) }}</p>
-        <p>twinID: {{ farm.twin_id }}</p>
-        <p>certification type: {{ farm.certification_type }}</p>
-        <p>pricing policy id: {{farm.pricing_policy_id }}</p>
 
-        <a href="http://dev.bootstrap.grid.tf/uefimg/dev/1">Download image!</a>
-        <!-- <div class="actions">
-        </div> -->
-      </div>
-      <div v-else>
-        <p v-if="!loadingCreateFarm">No Farm yet</p>
-        <div class="actions">
+    <v-data-table
+      :headers="headers"
+      :items="farms"
+      :single-expand="singleExpand"
+      :expanded.sync="expanded"
+      item-key="name"
+      show-expand
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Your Farms</v-toolbar-title>
+          <v-spacer></v-spacer>
           <CreateFarm
             :create="createFarmForTwin"
             :loading="loadingCreateFarm"
           />
-        </div>
-      </div>
-      </v-col>
-    </v-row>
+        </v-toolbar>
+      </template>
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download image!</a>
+        </td>
+      </template>
+    </v-data-table>
+
   </div>
 </template>
 
@@ -47,17 +50,24 @@ export default {
   async mounted () {
     this.$store.dispatch('getAPI')
 
-    const twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
-    this.twinID = twinID
-    const farm = await getFarm(this.$store.state.api, twinID)
-    this.farm = farm
+    this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
+    this.farms = await getFarm(this.$store.state.api, this.twinID)
   },
 
   data () {
     return {
-      farm: undefined,
+      farms: [],
       twinID: 0,
-      loadingCreateFarm: false
+      loadingCreateFarm: false,
+      expanded: [],
+      singleExpand: true,
+      headers: [
+        { text: 'Farm ID', value: 'id' },
+        { text: 'Farm name', value: 'name' },
+        { text: 'Linked Twin ID', value: 'twin_id' },
+        { text: 'Certification type', value: 'certification_type' },
+        { text: 'Pricing Policy ID', value: 'pricing_policy_id' },
+      ]
     }
   },
 

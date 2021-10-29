@@ -10,7 +10,7 @@
           dark
           v-bind="attrs"
           v-on="on"
-          :loading="loading"
+          class="button"
         >
           Deposit from Stellar
         </v-btn>
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-const TFT_BRIDGE_WALLET = process.env.TFT_BRIDGE_WALLET || 'GCMBZY4NGEV4CQYHJ6SXMRSTLTEOR2ERNKY6NH32LYCVDCN2E5CXZJOU'
+const TFT_BRIDGE_WALLET = process.env.TFT_BRIDGE_WALLET || 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
 export default {
   name: 'Deposit',
   props: ['twinID'],
@@ -79,5 +79,8 @@ export default {
 .textContainer ul {
   margin-top: 1em;
   margin-bottom: 2em;
+}
+.button {
+  margin-right: 1em !important;
 }
 </style>

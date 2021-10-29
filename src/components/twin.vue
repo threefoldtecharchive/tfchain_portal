@@ -1,5 +1,18 @@
 <template>
   <div v-if="twin && twin.id !== 0">
+    <h3>Balance</h3>
+    <v-row class="no-gutters">
+      <v-col cols="12" sm="12" class="account">
+        <div>
+          <p>Balance: {{ balance }} TFT</p>
+          <div class="actions">
+            <Deposit :twinID="this.twinID"/>
+            <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
     <h3>Twins</h3>
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
@@ -9,19 +22,6 @@
           <p>accountID: {{ twin.account_id }}</p>
           <div class="actions">
             <!-- <v-btn color="primary" @click="routeToAccount(account.address)">Enter</v-btn> -->
-          </div>
-        </div>
-      </v-col>
-    </v-row>
-
-    <h3>Balance</h3>
-    <v-row class="no-gutters">
-      <v-col cols="12" sm="12" class="account">
-        <div>
-          <p>Balance: {{ balance }} TFT</p>
-          <div class="actions">
-            <Deposit :twinID="this.twinID"/>
-            <v-btn color="primary" @click="withdraw()">Withdraw to Stellar</v-btn>
           </div>
         </div>
       </v-col>
@@ -42,8 +42,10 @@
 import { mapGetters } from 'vuex'
 import CreateTwin from './createTwin.vue'
 import Deposit from './bridge/deposit.vue'
+import Withdraw from './bridge/withdraw.vue'
 import { getTwin, getTwinID, createTwin } from '../lib/twin'
 import { getBalance } from '../lib/balance'
+import { withdraw } from '../lib/bridge'
 import { hex2a } from '../lib/util'
 
 export default {
@@ -51,7 +53,8 @@ export default {
 
   components: {
     CreateTwin,
-    Deposit
+    Deposit,
+    Withdraw
   },
 
   ...mapGetters(['api']),
@@ -67,7 +70,8 @@ export default {
       twinID: 0,
       twin: undefined,
       loadingCreateTwin: false,
-      balance: 0
+      balance: 0,
+      loadingWithdraw: false
     }
   },
 
@@ -104,18 +108,46 @@ export default {
                   this.loadingCreateTwin = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Twin creation faild!')
+              this.$toasted.show('Twin creation failed!')
               this.loadingCreateTwin = false
             }
           })
         }
       })
     },
-    deposit () {
+    withdraw (target, amount) {
+      this.loadingWithdraw = true
+      withdraw(this.$route.params.accountID, this.$store.state.api, target, amount, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
 
-    },
-    withdraw () {
-
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        this.$toasted.show(`Current status is ${status.type}`)
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tftBridgeModule' && method === 'BurnTransactionCreated') {
+              this.$toasted.show('Withdraw sumbitted!')
+              this.loadingWithdraw = false
+              getBalance(this.$store.state.api, this.$route.params.accountID)
+                .then(balance => {
+                  this.balance = balance
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Withdraw failed!')
+              this.loadingWithdraw = false
+            }
+          })
+        }
+      })
     }
   }
 }
@@ -138,7 +170,7 @@ export default {
 }
 .actions {
   display: flex !important;
-  justify-content: flex-start !important;
+  justify-content: space-around !important;
   margin-top: 1em;
 }
 

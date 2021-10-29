@@ -13,8 +13,8 @@
           src="./assets/3fold_logo.png"
           transition="scale-transition"
           width="40"
+          @click="$router.push('/')"
         />
-
         <span>TF Chain UI</span>
       </div>
 

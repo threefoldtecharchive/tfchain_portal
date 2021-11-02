@@ -58,7 +58,7 @@
 </template>
 
 <script>
-const VUE_APP_BRIDGE_TFT_ADDRESS = process.env.VUE_APP_BRIDGE_TFT_ADDRESS || 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
+import config from '../../config'
 export default {
   name: 'Deposit',
   props: ['twinID'],
@@ -66,7 +66,7 @@ export default {
   data () {
     return {
       open: false,
-      depositWallet: VUE_APP_BRIDGE_TFT_ADDRESS
+      depositWallet: config.bridgeTftAddress
     }
   },
 

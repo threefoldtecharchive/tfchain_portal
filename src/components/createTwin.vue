@@ -58,7 +58,7 @@ export default {
   data: () => {
     return {
       open: false,
-      twinIP: '',
+      twinIP: '127.0.0.1',
     }
   },
   methods: {

@@ -1,25 +1,31 @@
 <template>
   <div v-if="twin && twin.id !== 0">
-    <h3>Balance</h3>
+    
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
-        <div>
-          <p>Balance: {{ balance }} TFT</p>
-          <div class="actions">
-            <Deposit :twinID="this.twinID"/>
-            <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
+        <div class="title">
+          <h3>Balance</h3>
+        </div>
+        <div class="inner">
+          <div class="balance">
+            <p>{{ balance }} TFT</p>
           </div>
+        </div>
+        <div class="button-group">
+          <Deposit :twinID="this.twinID"/>
+          <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
         </div>
       </v-col>
     </v-row>
 
-    <h3>Twins</h3>
+    
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
         <div>
-          <p>twinID: {{twinID}}</p>
-          <p>ip: {{ decodeHex(twin.ip) }}</p>
-          <p>accountID: {{ twin.account_id }}</p>
+          <h3>Twin</h3>
+          <p>ID: {{twinID}}</p>
+          <p>IP: {{ decodeHex(twin.ip) }}</p>
+          <p>Address: {{ twin.account_id }}</p>
           <div class="actions">
             <!-- <v-btn color="primary" @click="routeToAccount(account.address)">Enter</v-btn> -->
           </div>
@@ -161,27 +167,37 @@ export default {
 </script>
 <style scoped>
 .account {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(248, 248, 248);
   height: 100%;
   width: 100%;
-  margin-top: 0.2em;
   margin-bottom: 1em;
   border-radius: 0.3em;
-  padding: 2em !important;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
 }
+
+.title {
+  margin-top: 0;
+  padding: 1em;
+}
+
+.inner {
+  padding-top: 1em;
+}
+
+.inner button {
+  width: 100% !important;
+}
+
+.inner p {
+  text-align: center;
+  font-size: 22px;
+}
+
 .account p {
   margin-bottom: 0px !important;
 }
-.actions {
-  display: flex !important;
-  justify-content: space-around !important;
-  margin-top: 1em;
-}
 
-.actions button {
-  margin-right: 1em;
+.button-group {
+  display: flex;
+  justify-content: center;
 }
 </style>

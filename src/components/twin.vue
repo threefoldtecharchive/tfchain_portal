@@ -28,7 +28,6 @@
     </v-row>
   </div>
   <div v-else>
-    <p v-if="!loadingCreateTwin">No Twin yet</p>
     <div class="actions">
       <CreateTwin
         :create="createTwinFromAccount"
@@ -90,7 +89,9 @@ export default {
 
         const { events = [], status } = res
         console.log(`Current status is ${status.type}`)
-        this.$toasted.show(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
       
         if (status.isFinalized) {
           console.log(`Transaction included at blockHash ${status.asFinalized}`)
@@ -130,7 +131,9 @@ export default {
 
         const { events = [], status } = res
         console.log(`Current status is ${status.type}`)
-        this.$toasted.show(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
       
         if (status.isFinalized) {
           console.log(`Transaction included at blockHash ${status.asFinalized}`)

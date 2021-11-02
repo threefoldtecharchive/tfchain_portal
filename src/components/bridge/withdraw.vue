@@ -69,13 +69,13 @@
 import stellar from 'stellar-sdk'
 
 const { 
-  STELLAR_HORIZON_URL = 'https://horizon-testnet.stellar.org',
-  TFT_ASSET_ISSUER = 'GA47YZA3PKFUZMPLQ3B5F2E3CJIB57TGGU7SPCQT2WAEYKN766PWIMB3',
-  TFT_BRIDGE_WALLET = 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
+  VUE_APP_STELLAR_HORIZON_URL = 'https://horizon-testnet.stellar.org',
+  VUE_APP_TFT_ASSET_ISSUER = 'GA47YZA3PKFUZMPLQ3B5F2E3CJIB57TGGU7SPCQT2WAEYKN766PWIMB3',
+  VUE_APP_BRIDGE_TFT_ADDRESS = 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
 } = process.env
 const TFT_ASSET = 'TFT'
 
-const server = new stellar.Server(STELLAR_HORIZON_URL)
+const server = new stellar.Server(VUE_APP_STELLAR_HORIZON_URL)
 
 export default {
   name: 'Withdraw',
@@ -84,7 +84,7 @@ export default {
   data () {
     return {
       open: false,
-      bridgeWallet: TFT_BRIDGE_WALLET,
+      bridgeWallet: VUE_APP_BRIDGE_TFT_ADDRESS,
       target: '',
       userAmount: this.balance,
       errorMessages: '',
@@ -102,7 +102,7 @@ export default {
       this.open = false
     },
     async targetCheck () {
-      if (this.target === TFT_BRIDGE_WALLET) {
+      if (this.target === VUE_APP_BRIDGE_TFT_ADDRESS) {
         this.errorMessages = 'Target cannot be the bridge wallet!'
         return false
       }
@@ -111,7 +111,7 @@ export default {
         // check if the account provided exists on stellar
         const account = await server.loadAccount(this.target)
         // check if the account provided has the appropriate trustlines
-        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === TFT_ASSET_ISSUER)
+        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === VUE_APP_TFT_ASSET_ISSUER)
         if (!includes) {
           this.errorMessages = 'Address does not have a valid trustline to TFT'
           return false

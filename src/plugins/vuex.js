@@ -16,7 +16,7 @@ const store = new Vuex.Store({
     api: undefined,
     snackbar: false,
     connected: false,
-    accounts: undefined,
+    accounts: [],
     loadingAPI: true
   },
   mutations: {

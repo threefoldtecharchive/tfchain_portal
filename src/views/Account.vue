@@ -33,16 +33,16 @@
       </v-list-item> -->
       <v-list-item link @click="selectedItem = 'twins'">
         <v-list-item-icon>
-          <v-icon>mdi-account-multiple</v-icon>
+          <v-icon>mdi-account</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>
-          <v-list-item-title>Twins</v-list-item-title>
+          <v-list-item-title>Twin</v-list-item-title>
         </v-list-item-content>
       </v-list-item>
       <v-list-item link @click="selectedItem = 'farms'">
         <v-list-item-icon>
-          <v-icon>mdi-account-multiple</v-icon>
+          <v-icon>mdi-barley</v-icon>
         </v-list-item-icon>
 
         <v-list-item-content>

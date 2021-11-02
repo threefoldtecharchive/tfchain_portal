@@ -26,7 +26,7 @@
             Send a Stellar transaction with your TFT's to deposit to:
             <ul>
               <li>Destination: <b>{{ depositWallet }}</b></li>
-              <li>Memo Text: <b>twin-{{twinID}}</b></li>
+              <li>Memo Text: <b>twin_{{twinID}}</b></li>
             </ul>
 
             <v-alert
@@ -58,7 +58,7 @@
 </template>
 
 <script>
-const TFT_BRIDGE_WALLET = process.env.TFT_BRIDGE_WALLET || 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
+const VUE_APP_BRIDGE_TFT_ADDRESS = process.env.VUE_APP_BRIDGE_TFT_ADDRESS || 'GBJPPYMN7UABG7YGPENKY3C4LR4WIOKPFPXSYLOUH66Y3ST54OPDEMD4'
 export default {
   name: 'Deposit',
   props: ['twinID'],
@@ -66,9 +66,13 @@ export default {
   data () {
     return {
       open: false,
-      depositWallet: TFT_BRIDGE_WALLET
+      depositWallet: VUE_APP_BRIDGE_TFT_ADDRESS
     }
   },
+
+  mounted () {
+    console.log(process.env)
+  }
 }
 </script>
 <style scoped>

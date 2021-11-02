@@ -21,9 +21,57 @@
           />
         </v-toolbar>
       </template>
-      <template v-slot:expanded-item="{ headers, item }">
+      <template v-slot:expanded-item="{ item }">
         <td :colspan="headers.length">
-          <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download image!</a>
+          <v-col>
+            <v-container fluid>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Farm ID</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.id }}</span>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Farm Name</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.name }}</span>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Linked Twin ID</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.twin_id }}</span>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Certification Type</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.certification_type }}</span>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Linked pricing Policy ID</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.pricing_policy_id }}</span>
+                </v-flex>
+              </v-row>
+              <v-row v-if="item.public_ips.length > 0">
+                <v-flex xs3 class="text-left pr-2">Public IP's</v-flex>
+              </v-row>
+              <v-row v-for="ip in item.public_ips" :key="ip.ip">
+                <ul>
+                  <li>
+                    <span>IP: {{ decodeHex(ip.ip) }}, Gateway: {{ decodeHex(ip.gateway) }}, Linked contract ID: {{ ip.contract_id }}</span>
+                  </li>
+                </ul>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">
+                  <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download image!</a>
+                </v-flex>
+              </v-row>
+            </v-container>
+          </v-col>
         </td>
       </template>
     </v-data-table>
@@ -86,7 +134,9 @@ export default {
 
         const { events = [], status } = res
         console.log(`Current status is ${status.type}`)
-        this.$toasted.show(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
       
         if (status.isFinalized) {
           console.log(`Transaction included at blockHash ${status.asFinalized}`)
@@ -128,5 +178,10 @@ export default {
 }
 .account p {
   margin-bottom: 0px !important;
+}
+.farmInfo {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
 }
 </style>

@@ -19,7 +19,7 @@
               color="primary" 
               @click="routeToAccount(account.address, account)"
             >
-              Enter
+              Manage
             </v-btn>
           </div>
         </v-col>

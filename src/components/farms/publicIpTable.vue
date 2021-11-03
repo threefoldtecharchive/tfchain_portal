@@ -35,9 +35,16 @@
           <td>{{ decodeHex(ip.ip) }}</td>
           <td>{{ decodeHex(ip.gateway) }}</td>
           <td>{{ ip.contract_id }}</td>
-          <td class="delete">
+          <td>
+            <v-progress-circular
+              v-if="loadingDelete"
+              indeterminate
+              color="primary"
+              v-on="on" 
+              v-bind="attrs"
+            ></v-progress-circular>
             <DeleteIP
-              :loadingDelete="loadingDelete"
+              v-else
               :ip="ip"
               @delete="deletePublicIP(ip)"
             />
@@ -76,9 +83,6 @@ export default {
 }
 </script>
 <style scoped>
-.delete {
-  cursor: pointer;
-}
 .table {
   width: 100%;
 }

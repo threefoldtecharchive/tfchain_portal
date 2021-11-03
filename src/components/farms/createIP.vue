@@ -12,6 +12,7 @@
           v-on="on"
           :loading="loadingCreate"
           outlined
+          small
         >
         Add IP
         </v-btn>
@@ -87,7 +88,8 @@ export default {
       open: false,
       ip: '',
       ipErrorMessage: '',
-      gateway: ''
+      gateway: '',
+      gatewayErrorMessage: ''
     }
   },
 

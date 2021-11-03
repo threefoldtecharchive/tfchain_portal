@@ -5,14 +5,18 @@
       width="500"
     >
       <template v-slot:activator="{ on, attrs }">
-        <v-progress-circular
-          v-if="loadingDelete"
-          indeterminate
-          color="primary"
-          v-on="on" 
+        <v-btn
+          color="secondary"
+          dark
           v-bind="attrs"
-        ></v-progress-circular>
-        <v-icon v-else v-on="on" v-bind="attrs">mdi-delete</v-icon>
+          v-on="on"
+          :loading="loadingDelete"
+          outlined
+          x-small
+          block
+        >
+        Delete IP
+        </v-btn>
       </template>
 
       <v-card>
@@ -53,14 +57,13 @@
 import { hex2a } from '../../lib/util'
 export default {
   name: 'DeleteIP',
-  props: ['ip', 'delete', 'loadingDelete'],
+  props: ['ip', 'delete'],
 
   data: () => {
     return {
       open: false,
     }
   },
-
   methods: {
     deletePublicIP() {
       this.open = false

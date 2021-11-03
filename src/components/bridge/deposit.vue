@@ -70,10 +70,6 @@ export default {
       depositWallet: config.bridgeTftAddress
     }
   },
-
-  mounted () {
-    console.log(process.env)
-  }
 }
 </script>
 <style scoped>

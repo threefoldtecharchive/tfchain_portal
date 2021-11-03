@@ -50,7 +50,7 @@
                 </v-flex>
               </v-row>
               <v-row>
-                <v-flex xs3 class="text-left pr-2">Linked pricing Policy ID</v-flex>
+                <v-flex xs3 class="text-left">Linked pricing Policy ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
                   <span>{{ item.pricing_policy_id }}</span>
                 </v-flex>
@@ -58,13 +58,13 @@
               <v-row v-if="item.public_ips.length > 0">
                 <v-flex xs3 class="text-left pr-2">Public IP's</v-flex>
               </v-row>
-              <v-row v-for="ip in item.public_ips" :key="ip.ip">
-                <ul>
-                  <li>
-                    <span>IP: {{ decodeHex(ip.ip) }}, Gateway: {{ decodeHex(ip.gateway) }}, Linked contract ID: {{ ip.contract_id }}</span>
-                  </li>
-                </ul>
-              </v-row>
+
+              <PublicIPTable
+                :ips="item.public_ips" 
+                :deleteIP="deletePublicIP"
+                :loadingDelete="loadingDeleteIP"
+              />
+              
               <v-row>
                 <v-flex xs3 class="text-left pr-2">
                   <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download image!</a>
@@ -81,16 +81,18 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getFarm, getFarmByID, createFarm } from '../lib/farm'
+import { getFarm, createFarm, deleteIP } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
 import { hex2a } from '../lib/util'
-import CreateFarm from './createFarm.vue'
+import CreateFarm from './farms/createFarm.vue'
+import PublicIPTable from './farms/publicIpTable.vue'
 
 export default {
   name: 'Farm',
 
   components: {
     CreateFarm,
+    PublicIPTable,
   },
 
   ...mapGetters(['api']),
@@ -107,6 +109,7 @@ export default {
       farms: [],
       twinID: 0,
       loadingCreateFarm: false,
+      loadingDeleteIP: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -146,15 +149,51 @@ export default {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
             if (section === 'tfgridModule' && method === 'FarmStored') {
               this.$toasted.show('Farm created!')
-              const farmStoredEvent = data[0]
-              getFarmByID(this.$store.state.api, farmStoredEvent.id)
-                .then(farm => {
-                  this.farm = farm
+              getFarm(this.$store.state.api, this.twinID)
+                .then(farms => {
+                  this.farms = farms
                   this.loadingCreateFarm = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Farm creation faild!')
               this.loadingCreateFarm = false
+            }
+          })
+        }
+      })
+      .catch(() => this.loadingCreateFarm = false)
+    },
+    deletePublicIP (ip) {
+      this.loadingDeleteIP = true
+      deleteIP(this.$route.params.accountID, this.$store.state.api, this.expanded[0].id, ip, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'FarmUpdated') {
+              this.$toasted.show('IP deleted!')
+              getFarm(this.$store.state.api, this.twinID)
+                .then(farms => {
+                  this.farms = farms
+                  this.loadingDeleteIP = false
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Farm creation faild!')
+              this.loadingDeleteIP = false
             }
           })
         }

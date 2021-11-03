@@ -53,8 +53,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import CreateTwin from './createTwin.vue'
-import EditTwin from './editTwin.vue'
+import CreateTwin from './twins/createTwin.vue'
+import EditTwin from './twins/editTwin.vue'
 import Deposit from './bridge/deposit.vue'
 import Withdraw from './bridge/withdraw.vue'
 import { getTwin, getTwinID, createTwin, updateTwin } from '../lib/twin'

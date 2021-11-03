@@ -18,3 +18,10 @@ export async function createTwin (address, api, ip, callback) {
     .createTwin(ip)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
+
+export async function updateTwin (address, api, ip, callback) {
+  const injector = await web3FromAddress(address)
+  api.tx.tfgridModule
+    .updateTwin(ip)
+    .signAndSend(address, { signer: injector.signer }, callback)
+}

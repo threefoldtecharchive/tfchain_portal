@@ -11,21 +11,22 @@
           v-bind="attrs"
           v-on="on"
           :loading="loading"
+          outlined
         >
-          Create Twin
+          Edit Twin
         </v-btn>
       </template>
 
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
-          Create Twin
+          Edit Twin
         </v-card-title>
 
         <v-card-text>
           <div class="text">
             <v-text-field
               label="Twin IP"
-              v-model="twinIP"
+              v-model="newIP"
               required
               outlined
             ></v-text-field>
@@ -39,9 +40,9 @@
           <v-btn
             color="primary"
             text
-            @click="createTwin()"
+            @click="editTwin()"
           >
-            Create
+            Save
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -49,26 +50,27 @@
   </div>
 </template>
 <script>
-import { mapState } from 'vuex'
-
 export default {
   name: 'App',
-  props: ['create', 'loading'],
+  props: ['edit', 'loading', 'twinIP'],
 
-  computed: mapState([
-    'connected'
-  ]),
+  mounted () {
+    console.log(this.twinIP)
+    this.newIP = this.twinIP
+  },
+
   data: () => {
     return {
       open: false,
-      twinIP: '127.0.0.1',
+      newIP: ''
     }
   },
+
   methods: {
-    createTwin() {
+    editTwin() {
       this.open = false
-      console.log(this.twinIP)
-      this.create(this.twinIP)
+      console.log(this.newIP)
+      this.edit(this.newIP)
     }
   }
 };

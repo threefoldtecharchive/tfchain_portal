@@ -4,6 +4,7 @@ const config = {
   tftAssetIssuer: window.VUE_APP_TFT_ASSET_ISSUER || process.env.VUE_APP_TFT_ASSET_ISSUER,
   bridgeTftAddress: window.VUE_APP_BRIDGE_TFT_ADDRESS || process.env.VUE_APP_BRIDGE_TFT_ADDRESS,
   activationServiceUrl: window.VUE_APP_ACTIVATION_SERVICE_URL || process.env.VUE_APP_ACTIVATION_SERVICE_URL,
+  explorerUrl: window.VUE_APP_EXPLORER_URL || process.env.VUE_APP_EXPLORER_URL
 }
 
 export default config

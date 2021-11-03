@@ -1,28 +1,42 @@
 <template>
   <div v-if="twin && twin.id !== 0">
-    <h3>Balance</h3>
+    
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
-        <div>
-          <p>Balance: {{ balance }} TFT</p>
-          <div class="actions">
-            <Deposit :twinID="this.twinID"/>
-            <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
+        <div class="title">
+          <h3>Balance</h3>
+        </div>
+        <div class="inner">
+          <div class="balance">
+            <p>{{ balance }} TFT</p>
           </div>
+        </div>
+        <v-divider></v-divider>
+        <div class="button-group">
+          <Deposit :twinID="this.twinID"/>
+          <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
         </div>
       </v-col>
     </v-row>
 
-    <h3>Twins</h3>
+    
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
-        <div>
-          <p>twinID: {{twinID}}</p>
-          <p>ip: {{ decodeHex(twin.ip) }}</p>
-          <p>accountID: {{ twin.account_id }}</p>
-          <div class="actions">
-            <!-- <v-btn color="primary" @click="routeToAccount(account.address)">Enter</v-btn> -->
-          </div>
+        <div class="title">
+          <h3>Twin</h3>
+        </div>
+        <div class="twinInfo">
+          <p>ID: {{twinID}}</p>
+          <p>IP: {{ decodeHex(twin.ip) }}</p>
+          <p>Address: {{ twin.account_id }}</p>
+        </div>
+        <v-divider></v-divider>
+        <div class="button-group">
+          <EditTwin
+            :edit="editTwin"
+            :loading="loadingCreateTwin"
+            :twinIP="decodeHex(twin.ip)"
+          />
         </div>
       </v-col>
     </v-row>
@@ -39,10 +53,11 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import CreateTwin from './createTwin.vue'
+import CreateTwin from './twins/createTwin.vue'
+import EditTwin from './twins/editTwin.vue'
 import Deposit from './bridge/deposit.vue'
 import Withdraw from './bridge/withdraw.vue'
-import { getTwin, getTwinID, createTwin } from '../lib/twin'
+import { getTwin, getTwinID, createTwin, updateTwin } from '../lib/twin'
 import { getBalance } from '../lib/balance'
 import { withdraw } from '../lib/bridge'
 import { hex2a } from '../lib/util'
@@ -52,6 +67,7 @@ export default {
 
   components: {
     CreateTwin,
+    EditTwin,
     Deposit,
     Withdraw
   },
@@ -120,6 +136,48 @@ export default {
         }
       })
     },
+    editTwin (ip) {
+      this.loadingCreateTwin = true
+      updateTwin(this.$route.params.accountID, this.$store.state.api, ip, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'TwinUpdated') {
+              this.$toasted.show('Twin updated!')
+              const twinStoredEvent = data[0]
+              getTwin(this.$store.state.api, twinStoredEvent.id)
+                .then(twin => {
+                  this.twin = twin
+                  this.twinID = twin.id
+                  this.loadingCreateTwin = false
+                  getBalance(this.$store.state.api, this.$route.params.accountID)
+                    .then(balance => {
+                      this.balance = balance / 1e7
+                    })
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Twin creation failed!')
+              this.loadingCreateTwin = false
+            }
+          })
+        }
+      })
+    },
     withdraw (target, amount) {
       this.loadingWithdraw = true
       withdraw(this.$route.params.accountID, this.$store.state.api, target, amount, (res) => {
@@ -161,27 +219,44 @@ export default {
 </script>
 <style scoped>
 .account {
-  background-color: rgb(255, 255, 255);
+  background-color: rgb(248, 248, 248);
   height: 100%;
   width: 100%;
-  margin-top: 0.2em;
   margin-bottom: 1em;
   border-radius: 0.3em;
-  padding: 2em !important;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  padding: 1em !important;
 }
+
+.title {
+  margin-top: 0;
+}
+
+.inner {
+  padding-top: 1em;
+  margin-bottom: 1em;
+}
+
+.inner button {
+  width: 100% !important;
+}
+
+.inner p {
+  text-align: center;
+  font-size: 22px;
+}
+
+.twinInfo {
+  margin-top: 1em;
+  padding-bottom: 1em;
+}
+
 .account p {
   margin-bottom: 0px !important;
 }
-.actions {
-  display: flex !important;
-  justify-content: space-around !important;
-  margin-top: 1em;
-}
 
-.actions button {
-  margin-right: 1em;
+.button-group {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-evenly;
 }
 </style>

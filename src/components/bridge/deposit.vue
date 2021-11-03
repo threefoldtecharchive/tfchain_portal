@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div>
     <v-dialog
       v-model="open"
       width="60vw"
@@ -11,6 +11,7 @@
           v-bind="attrs"
           v-on="on"
           class="button"
+          outlined
         >
           Deposit from Stellar
         </v-btn>
@@ -69,10 +70,6 @@ export default {
       depositWallet: config.bridgeTftAddress
     }
   },
-
-  mounted () {
-    console.log(process.env)
-  }
 }
 </script>
 <style scoped>
@@ -85,6 +82,6 @@ export default {
   margin-bottom: 2em;
 }
 .button {
-  margin-right: 1em !important;
+  width: 100% !important;
 }
 </style>

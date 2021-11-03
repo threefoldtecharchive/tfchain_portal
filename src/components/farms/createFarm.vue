@@ -11,22 +11,26 @@
           v-bind="attrs"
           v-on="on"
           :loading="loading"
+          outlined
         >
-          Create Twin
+          Create Farm
         </v-btn>
       </template>
 
       <v-card>
         <v-card-title class="text-h5 grey lighten-2">
-          Create Twin
+          Create Farm
         </v-card-title>
 
         <v-card-text>
-          <v-text-field
-            label="Twin IP"
-            v-model="twinIP"
-            required
-          ></v-text-field>
+          <div class="text">
+            <v-text-field
+              label="Farm Name"
+              v-model="name"
+              required
+              outlined
+            ></v-text-field>
+          </div>
         </v-card-text>
 
         <v-divider></v-divider>
@@ -36,7 +40,7 @@
           <v-btn
             color="primary"
             text
-            @click="createTwin()"
+            @click="createFarm()"
           >
             Create
           </v-btn>
@@ -58,14 +62,14 @@ export default {
   data: () => {
     return {
       open: false,
-      twinIP: '',
+      name: '',
     }
   },
   methods: {
-    createTwin() {
+    createFarm() {
       this.open = false
-      console.log(this.twinIP)
-      this.create(this.twinIP)
+      console.log(this.name)
+      this.create(this.name)
     }
   }
 };
@@ -73,5 +77,8 @@ export default {
 <style scoped>
 .v-main {
   background-color: rgb(236, 236, 236) !important;
+}
+.text {
+  margin-top: 2em !important;
 }
 </style>

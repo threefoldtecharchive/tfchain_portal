@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div>
     <v-dialog
       v-model="open"
       width="60vw"
@@ -11,6 +11,8 @@
           v-bind="attrs"
           v-on="on"
           :loading="loading"
+          class="button"
+          outlined
         >
           Withdraw to Stellar
         </v-btn>
@@ -130,5 +132,9 @@ export default {
 .textContainer ul {
   margin-top: 1em;
   margin-bottom: 2em;
+}
+
+.button {
+  width: 100% !important;
 }
 </style>

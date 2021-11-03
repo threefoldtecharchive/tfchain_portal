@@ -52,7 +52,7 @@
 <script>
 import { hex2a } from '../../lib/util'
 export default {
-  name: 'App',
+  name: 'DeleteIP',
   props: ['ip', 'delete', 'loadingDelete'],
 
   data: () => {
@@ -61,10 +61,6 @@ export default {
     }
   },
 
-  mounted () {
-    console.log(this.loadingDelete)
-  },
-  
   methods: {
     deletePublicIP() {
       this.open = false

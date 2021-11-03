@@ -59,11 +59,15 @@
                 <v-flex xs3 class="text-left pr-2">Public IP's</v-flex>
               </v-row>
 
-              <PublicIPTable
-                :ips="item.public_ips" 
-                :deleteIP="deletePublicIP"
-                :loadingDelete="loadingDeleteIP"
-              />
+              <v-row>
+                <PublicIPTable
+                  :ips="item.public_ips" 
+                  :deleteIP="deletePublicIP"
+                  :loadingDelete="loadingDeleteIP"
+                  :createIP="createPublicIP"
+                  :loadingCreate="loadingCreateIP"
+                />
+              </v-row>
               
               <v-row>
                 <v-flex xs3 class="text-left pr-2">
@@ -81,7 +85,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getFarm, createFarm, deleteIP } from '../lib/farm'
+import { getFarm, createFarm, deleteIP, createIP } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
 import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
@@ -110,6 +114,7 @@ export default {
       twinID: 0,
       loadingCreateFarm: false,
       loadingDeleteIP: false,
+      loadingCreateIP: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -194,6 +199,43 @@ export default {
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Farm creation faild!')
               this.loadingDeleteIP = false
+            }
+          })
+        }
+      })
+      .catch(() => this.loadingCreateFarm = false)
+    },
+    createPublicIP (ip, gateway) {
+      this.loadingCreateIP = true
+      createIP(this.$route.params.accountID, this.$store.state.api, this.expanded[0].id, ip, gateway, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'FarmUpdated') {
+              this.$toasted.show('IP created!')
+              getFarm(this.$store.state.api, this.twinID)
+                .then(farms => {
+                  this.farms = farms
+                  this.loadingCreateIP = false
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Farm creation faild!')
+              this.loadingCreateIP = false
             }
           })
         }

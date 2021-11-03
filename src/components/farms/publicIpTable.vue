@@ -4,7 +4,10 @@
       <v-toolbar flat>
         <v-toolbar-title>Public IPS</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn>Add</v-btn>
+        <CreateIP 
+          :loadingCreate="loadingCreate"
+          @create="createPublicIP"
+        />
       </v-toolbar>
     </template>
     <template v-slot:default>
@@ -47,15 +50,17 @@
 <script>
 import { hex2a } from '../../lib/util'
 import DeleteIP from './deleteIP.vue'
+import CreateIP from './createIP.vue'
 
 export default {
   name: 'publicIpTable',
 
   components: {
     DeleteIP,
+    CreateIP
   },
 
-  props: ['ips', 'deleteIP', 'loadingDelete'],
+  props: ['ips', 'deleteIP', 'loadingDelete', 'createIP', 'loadingCreate'],
 
   methods: {
     decodeHex (input) {
@@ -63,6 +68,9 @@ export default {
     },
     deletePublicIP (ip) {
       this.deleteIP(ip)
+    },
+    createPublicIP (ip, gateway) {
+      this.createIP(ip, gateway)
     }
   }
 }
@@ -72,7 +80,6 @@ export default {
   cursor: pointer;
 }
 .table {
-  margin-top: 1em;
-  margin-bottom: 2em;
+  width: 100%;
 }
 </style>

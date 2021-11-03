@@ -41,4 +41,11 @@ export async function deleteIP (address, api, farmID, ip, callback) {
     .removeFarmIp(farmID, ip.ip)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
-  
+
+export async function createIP (address, api, farmID, ip, gateway, callback) {
+  const injector = await web3FromAddress(address)
+
+  api.tx.tfgridModule
+    .addFarmIp(farmID, ip, gateway)
+    .signAndSend(address, { signer: injector.signer }, callback)
+}

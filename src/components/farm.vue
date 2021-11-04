@@ -55,9 +55,6 @@
                   <span>{{ item.pricing_policy_id }}</span>
                 </v-flex>
               </v-row>
-              <v-row v-if="item.public_ips.length > 0">
-                <v-flex xs3 class="text-left pr-2">Public IP's</v-flex>
-              </v-row>
 
               <v-row>
                 <PublicIPTable

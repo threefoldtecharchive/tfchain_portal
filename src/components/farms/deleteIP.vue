@@ -10,7 +10,6 @@
           dark
           v-bind="attrs"
           v-on="on"
-          :loading="loadingDelete"
           outlined
           x-small
           block

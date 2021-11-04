@@ -55,7 +55,6 @@ export default {
   props: ['edit', 'loading', 'twinIP'],
 
   mounted () {
-    console.log(this.twinIP)
     this.newIP = this.twinIP
   },
 
@@ -69,7 +68,6 @@ export default {
   methods: {
     editTwin() {
       this.open = false
-      console.log(this.newIP)
       this.edit(this.newIP)
     }
   }

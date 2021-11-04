@@ -40,6 +40,8 @@ spec:
             value: {{ .Values.tft_asset_issuer }}
           - name: VUE_APP_BRIDGE_TFT_ADDRESS
             value: {{ .Values.stellar_bridge_address }}
+          - name: VUE_APP_EXPLORER_URL
+            value: {{ .Values.explorer_url }}
           ports:
             - name: http
               containerPort: 80

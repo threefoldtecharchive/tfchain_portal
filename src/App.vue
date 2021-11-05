@@ -1,8 +1,8 @@
 <template>
-  <v-app>
+  <v-app class="main">
     <v-app-bar
       app
-      color="primary"
+      color="#5842f2"
       dark
     >
       <div class="home d-flex align-center">
@@ -75,5 +75,8 @@ export default {
 .explorer span {
   cursor: pointer;
   color: black;
+}
+.v-main {
+  background: #1C1D33 !important;
 }
 </style>

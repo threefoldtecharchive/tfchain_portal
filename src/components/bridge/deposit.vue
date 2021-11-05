@@ -30,6 +30,13 @@
               <li>Memo Text: <b>twin_{{twinID}}</b></li>
             </ul>
 
+            <v-divider/>
+
+            <div class="qr">
+              <span>Or use Threefold connect to scan this qr code</span>
+              <qrcode-vue :value="qrCodeText" :size="200" level="H" />
+            </div>
+
             <v-alert
               border="right"
               color="red lighten-2"
@@ -60,6 +67,8 @@
 
 <script>
 import config from '../../config'
+import QrcodeVue from 'qrcode.vue'
+
 export default {
   name: 'Deposit',
   props: ['twinID'],
@@ -67,9 +76,14 @@ export default {
   data () {
     return {
       open: false,
-      depositWallet: config.bridgeTftAddress
+      depositWallet: config.bridgeTftAddress,
+      qrCodeText: `TFT:${config.bridgeTftAddress}?message=twin_${this.twinID}&sender=me`
     }
   },
+
+  components: {
+    QrcodeVue,
+  }
 }
 </script>
 <style scoped>
@@ -83,5 +97,15 @@ export default {
 }
 .button {
   width: 100% !important;
+}
+.qr {
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
+  text-align: center;
+  margin: auto;
+}
+.qr span {
+  margin-top: 1em;
+  margin-bottom: 0.2em !important;
 }
 </style>

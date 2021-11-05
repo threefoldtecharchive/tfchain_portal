@@ -3,4 +3,4 @@ name: tfchainportal
 description: A Helm chart tfchain portal frontend
 type: application
 version: 0.1.3
-appVersion: "0.1.0-b5"
+appVersion: "0.1.0-b6"

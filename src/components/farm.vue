@@ -67,8 +67,20 @@
               </v-row>
               
               <v-row>
-                <v-flex xs3 class="text-left pr-2">
-                  <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download image!</a>
+                <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
+                <v-flex xs3>
+                  <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download USB image</a>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left">Farm V2 payout address (Stellar)</v-flex>
+                <v-flex xs3>
+                  <CreateV2Address
+                    v-if="item.v2address === ''"
+                    :loading="loadingAddV2Address"
+                    :addV2Address="addV2Address"
+                  />
+                  <span v-else>{{ item.v2address }}</span>
                 </v-flex>
               </v-row>
             </v-container>
@@ -82,11 +94,12 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getFarm, createFarm, deleteIP, createIP } from '../lib/farm'
+import { getFarm, createFarm, deleteIP, createIP, setFarmPayoutV2Address } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
 import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
+import CreateV2Address from './farms/createV2Address.vue'
 
 export default {
   name: 'Farm',
@@ -94,6 +107,7 @@ export default {
   components: {
     CreateFarm,
     PublicIPTable,
+    CreateV2Address
   },
 
   ...mapGetters(['api']),
@@ -112,6 +126,7 @@ export default {
       loadingCreateFarm: false,
       loadingDeleteIP: false,
       loadingCreateIP: false,
+      loadingAddV2Address: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -123,7 +138,6 @@ export default {
       ]
     }
   },
-
   methods: {
     decodeHex (input) {
       return hex2a(input)
@@ -233,6 +247,43 @@ export default {
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Farm creation faild!')
               this.loadingCreateIP = false
+            }
+          })
+        }
+      })
+      .catch(() => this.loadingCreateFarm = false)
+    },
+    addV2Address (address) {
+      this.loadingAddV2Address = true
+      setFarmPayoutV2Address(this.$route.params.accountID, this.$store.state.api, this.expanded[0].id, address, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'FarmPayoutV2AddressRegistered') {
+              this.$toasted.show('Address added!')
+              getFarm(this.$store.state.api, this.twinID)
+                .then(farms => {
+                  this.farms = farms
+                  this.loadingAddV2Address = false
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Farm creation faild!')
+              this.loadingAddV2Address = false
             }
           })
         }

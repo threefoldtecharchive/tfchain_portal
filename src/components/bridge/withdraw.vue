@@ -28,7 +28,7 @@
             Interact with the bridge in order to withdraw your TFT to Stellar
           </div>
           <v-text-field
-            label="Stellat Target Wallet address"
+            label="Stellar Target Wallet address"
             v-model="target"
             required
             :error-messages="errorMessages"

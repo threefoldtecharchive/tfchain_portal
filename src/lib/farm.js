@@ -11,14 +11,18 @@ export async function getFarm (api, twinID) {
     }
   })
 
-  return twinFarms.map(farm => {
+  const parsedFarms = twinFarms.map(async farm => {
     const parsedFarm = farm[1].toJSON()
+    const v2address = await getFarmPayoutV2Address(api, parsedFarm.id)
 
     return {
       ...parsedFarm,
-      name: hex2a(parsedFarm.name)
+      name: hex2a(parsedFarm.name),
+      v2address: hex2a(v2address)
     }
   })
+
+  return await Promise.all(parsedFarms)
 }
 
 export async function getFarmByID (api, id) {
@@ -47,5 +51,18 @@ export async function createIP (address, api, farmID, ip, gateway, callback) {
 
   api.tx.tfgridModule
     .addFarmIp(farmID, ip, gateway)
+    .signAndSend(address, { signer: injector.signer }, callback)
+}
+
+export async function getFarmPayoutV2Address (api, id) {
+  const address = await api.query.tfgridModule.farmPayoutV2AddressByFarmID(id)
+  return address.toJSON()
+}
+
+export async function setFarmPayoutV2Address (address, api, id, v2address, callback) {
+  const injector = await web3FromAddress(address)
+
+  api.tx.tfgridModule
+    .addStellarPayoutV2Address(id, v2address)
     .signAndSend(address, { signer: injector.signer }, callback)
 }

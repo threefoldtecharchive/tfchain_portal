@@ -55,16 +55,6 @@
                   <span>{{ item.pricing_policy_id }}</span>
                 </v-flex>
               </v-row>
-
-              <v-row>
-                <PublicIPTable
-                  :ips="item.public_ips" 
-                  :deleteIP="deletePublicIP"
-                  :loadingDelete="loadingDeleteIP"
-                  :createIP="createPublicIP"
-                  :loadingCreate="loadingCreateIP"
-                />
-              </v-row>
               
               <v-row>
                 <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
@@ -74,14 +64,34 @@
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left">Farm V2 payout address (Stellar)</v-flex>
-                <v-flex xs3>
+                <v-flex >
                   <CreateV2Address
                     v-if="item.v2address === ''"
                     :loading="loadingAddV2Address"
                     :addV2Address="addV2Address"
+                    :text="'Add a Stellar V2 payout address'"
                   />
-                  <span v-else>{{ item.v2address }}</span>
+                  <div v-else>
+                    <span class="stellarv2address">
+                      {{ item.v2address }}
+                      <CreateV2Address
+                        :loading="loadingAddV2Address"
+                        :addV2Address="addV2Address"
+                        :text="'Edit'"
+                      />
+                    </span>
+                  </div>
                 </v-flex>
+              </v-row>
+
+              <v-row>
+                <PublicIPTable
+                  :ips="item.public_ips" 
+                  :deleteIP="deletePublicIP"
+                  :loadingDelete="loadingDeleteIP"
+                  :createIP="createPublicIP"
+                  :loadingCreate="loadingCreateIP"
+                />
               </v-row>
             </v-container>
           </v-col>
@@ -312,5 +322,9 @@ export default {
   display: flex !important;
   flex-direction: column !important;
   width: 100% !important;
+}
+.stellarv2address {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

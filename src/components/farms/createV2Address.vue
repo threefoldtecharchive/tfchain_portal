@@ -9,7 +9,7 @@
           v-bind="attrs"
           v-on="on"
         >
-          Add a Stellar V2 payout address
+          {{ text }}
         </a>
       </template>
 
@@ -58,7 +58,7 @@ const server = new stellar.Server(config.horizonUrl)
 
 export default {
   name: 'CreateV2Address',
-  props: ['addV2Address', 'loading'],
+  props: ['addV2Address', 'loading', 'text'],
 
   data: () => {
     return {

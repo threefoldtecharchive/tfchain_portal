@@ -80,4 +80,7 @@ export default {
 .text {
   margin-top: 2em !important;
 }
+.v-btn {
+  background: white !important;
+}
 </style>

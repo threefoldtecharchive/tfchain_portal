@@ -137,4 +137,7 @@ export default {
 .button {
   width: 100% !important;
 }
+.v-btn {
+  background: white !important;
+}
 </style>

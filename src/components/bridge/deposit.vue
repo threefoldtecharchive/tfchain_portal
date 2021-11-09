@@ -108,4 +108,7 @@ export default {
   margin-top: 1em;
   margin-bottom: 0.2em !important;
 }
+.v-btn {
+  background: white !important;
+}
 </style>

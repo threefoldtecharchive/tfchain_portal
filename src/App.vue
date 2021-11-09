@@ -2,7 +2,7 @@
   <v-app class="main">
     <v-app-bar
       app
-      color="#5842f2"
+      color="#252c48"
       dark
     >
       <div class="home d-flex align-center">
@@ -58,9 +58,6 @@ export default {
 };
 </script>
 <style scoped>
-.v-main {
-  background-color: rgb(236, 236, 236) !important;
-}
 .home {
   cursor: pointer;
 }
@@ -77,6 +74,6 @@ export default {
   color: black;
 }
 .v-main {
-  background: #1C1D33 !important;
+  background: #1b203a !important;
 }
 </style>

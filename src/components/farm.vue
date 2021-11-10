@@ -55,21 +55,15 @@
                   <span>{{ item.pricing_policy_id }}</span>
                 </v-flex>
               </v-row>
-              
+
               <v-row>
-                <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
-                <v-flex xs3>
-                  <a v-bind:href="'http://dev.bootstrap.grid.tf/uefimg/dev/' + item.id">Download USB image</a>
-                </v-flex>
-              </v-row>
-              <v-row>
-                <v-flex xs3 class="text-left">Farm V2 payout address (Stellar)</v-flex>
+                <v-flex xs3 class="text-left">Stellar payout address</v-flex>
                 <v-flex >
                   <CreateV2Address
                     v-if="item.v2address === ''"
                     :loading="loadingAddV2Address"
                     :addV2Address="addV2Address"
-                    :text="'Add a Stellar V2 payout address'"
+                    :text="'Add a Stellar payout address'"
                   />
                   <div v-else>
                     <span class="stellarv2address">
@@ -81,6 +75,13 @@
                       />
                     </span>
                   </div>
+                </v-flex>
+              </v-row>
+
+              <v-row>
+                <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
+                <v-flex xs3>
+                  <a v-bind:href="'https://dev.bootstrap.grid.tf/'" target="blank">Take me to bootstrap page</a>
                 </v-flex>
               </v-row>
 

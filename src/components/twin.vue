@@ -219,12 +219,21 @@ export default {
 </script>
 <style scoped>
 .account {
-  background-color: rgb(248, 248, 248);
+  /* background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%); */
+  background: #252c48;
   height: 100%;
   width: 100%;
   margin-bottom: 1em;
   border-radius: 0.3em;
   padding: 1em !important;
+}
+
+.account p {
+  color: white;
+}
+
+h3 {
+  color: white;
 }
 
 .title {

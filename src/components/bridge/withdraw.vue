@@ -12,14 +12,13 @@
           v-on="on"
           :loading="loading"
           class="button"
-          outlined
         >
           Withdraw to Stellar
         </v-btn>
       </template>
 
       <v-card class="card">
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Withdraw TFT
         </v-card-title>
 
@@ -136,5 +135,8 @@ export default {
 
 .button {
   width: 100% !important;
+}
+.card {
+  background: #252c48 !important;
 }
 </style>

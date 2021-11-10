@@ -1,8 +1,8 @@
 <template>
-  <v-app>
+  <v-app class="main">
     <v-app-bar
       app
-      color="primary"
+      color="#252c48"
       dark
     >
       <div class="home d-flex align-center">
@@ -21,7 +21,7 @@
       <v-spacer></v-spacer>
       
       <div class="explorer">
-        <span @click="$router.push('/explorer')">Capacity Explorer</span>
+        <v-btn color="primary" @click="$router.push('/explorer')">Capacity Explorer</v-btn>
       </div>
 
       <v-btn
@@ -58,22 +58,17 @@ export default {
 };
 </script>
 <style scoped>
-.v-main {
-  background-color: rgb(236, 236, 236) !important;
-}
 .home {
   cursor: pointer;
 }
 .explorer {
   margin-right: 1em;
-  background: rgb(241, 239, 239);
-  padding: 0.2em;
-  padding-right: 0.4em;
-  padding-left: 0.4em;
-  border-radius: 0.2em;
 }
 .explorer span {
   cursor: pointer;
   color: black;
+}
+.v-main {
+  background: #1b203a !important;
 }
 </style>

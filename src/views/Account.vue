@@ -157,4 +157,19 @@ export default {
 .overlay button {
   width: 100%;
 }
+.v-navigation-drawer {
+  background: #252c48 !important;
+}
+.v-list-item__title {
+  color:white !important;
+}
+.v-list-item__subtitle {
+  color:white !important;
+}
+.v-list-item__icon {
+  color:white !important;
+}
+.v-icon {
+  color:white;
+}
 </style>

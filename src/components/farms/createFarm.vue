@@ -11,14 +11,13 @@
           v-bind="attrs"
           v-on="on"
           :loading="loading"
-          outlined
         >
           Create Farm
         </v-btn>
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Create Farm
         </v-card-title>
 
@@ -80,5 +79,8 @@ export default {
 }
 .text {
   margin-top: 2em !important;
+}
+.v-card {
+  background: #252c48 !important;
 }
 </style>

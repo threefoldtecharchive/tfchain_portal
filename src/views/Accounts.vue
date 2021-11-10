@@ -78,8 +78,8 @@ import { mapState } from 'vuex'
   margin-top: 1em;
 }
 .account {
-  background: rgb(88,66,242);
-  background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%);
+  background: #3C6E71;
+  /* background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%); */
   height: 100%;
   border-radius: 0.3em;
   padding: 2em !important;

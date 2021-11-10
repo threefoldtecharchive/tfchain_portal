@@ -219,7 +219,8 @@ export default {
 </script>
 <style scoped>
 .account {
-  background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%);
+  /* background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%); */
+  background: #252c48;
   height: 100%;
   width: 100%;
   margin-bottom: 1em;

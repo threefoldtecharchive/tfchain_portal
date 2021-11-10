@@ -6,7 +6,6 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
-          color="primary"
           dark
           v-bind="attrs"
           v-on="on"
@@ -138,6 +137,10 @@ export default {
   width: 100% !important;
 }
 .v-btn {
-  background: white !important;
+  background: #8116F0 !important;
+  border-color: #8116F0 !important;
+}
+.v-btn__content {
+  color: white !important;
 }
 </style>

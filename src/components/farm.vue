@@ -82,7 +82,7 @@
               <v-row>
                 <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
                 <v-flex xs3>
-                  <a v-bind:href="'https://dev.bootstrap.grid.tf/'" target="blank">Take me to bootstrap page</a>
+                  <a class="link" v-bind:href="'https://dev.bootstrap.grid.tf/'" target="blank">Take me to bootstrap page</a>
                 </v-flex>
               </v-row>
 
@@ -306,20 +306,6 @@ export default {
 }
 </script>
 <style scoped>
-.account {
-  background-color: rgb(255, 255, 255);
-  height: 100%;
-  margin-top: 0.2em;
-  margin-bottom: 1em;
-  border-radius: 0.3em;
-  padding: 2em !important;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-.account p {
-  margin-bottom: 0px !important;
-}
 .farmInfo {
   display: flex !important;
   flex-direction: column !important;
@@ -334,5 +320,8 @@ export default {
 }
 .v-sheet {
   background: #252c48 !important;
+}
+.link {
+  color: white !important;
 }
 </style>

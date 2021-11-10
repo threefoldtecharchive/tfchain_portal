@@ -130,7 +130,7 @@ export default {
 .text {
   margin-top: 2em !important;
 }
-.card {
+.v-card {
   background: #252c48 !important;
 }
 </style>

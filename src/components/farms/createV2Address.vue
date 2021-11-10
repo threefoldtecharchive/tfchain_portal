@@ -8,13 +8,14 @@
         <a 
           v-bind="attrs"
           v-on="on"
+          class="link"
         >
           {{ text }}
         </a>
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Add V2 Stellar address
         </v-card-title>
 
@@ -100,5 +101,12 @@ export default {
 }
 .text {
   margin-top: 2em !important;
+}
+.link {
+  color: white !important;
+  text-decoration: underline;
+}
+.v-card {
+  background: #252c48 !important;
 }
 </style>

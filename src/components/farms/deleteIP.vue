@@ -19,7 +19,7 @@
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Delete IP
         </v-card-title>
 
@@ -80,5 +80,8 @@ export default {
 }
 .text {
   margin-top: 2em !important;
+}
+.v-card {
+  background: #252c48 !important;
 }
 </style>

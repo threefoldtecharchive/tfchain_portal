@@ -21,7 +21,7 @@
       <v-spacer></v-spacer>
       
       <div class="explorer">
-        <span @click="$router.push('/explorer')">Capacity Explorer</span>
+        <v-btn color="primary" @click="$router.push('/explorer')">Capacity Explorer</v-btn>
       </div>
 
       <v-btn
@@ -63,11 +63,6 @@ export default {
 }
 .explorer {
   margin-right: 1em;
-  background: rgb(241, 239, 239);
-  padding: 0.2em;
-  padding-right: 0.4em;
-  padding-left: 0.4em;
-  border-radius: 0.2em;
 }
 .explorer span {
   cursor: pointer;

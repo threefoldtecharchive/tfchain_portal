@@ -80,9 +80,6 @@ export default {
 .text {
   margin-top: 2em !important;
 }
-.v-btn {
-  background: white !important;
-}
 .v-card {
   background: #252c48 !important;
 }

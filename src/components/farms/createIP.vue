@@ -11,7 +11,6 @@
           v-bind="attrs"
           v-on="on"
           :loading="loadingCreate"
-          outlined
           small
         >
         Add IP
@@ -19,7 +18,7 @@
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Add a public ip to your Farm
         </v-card-title>
 
@@ -130,5 +129,8 @@ export default {
 }
 .text {
   margin-top: 2em !important;
+}
+.card {
+  background: #252c48 !important;
 }
 </style>

@@ -106,4 +106,13 @@ export default {
   margin-top: 0.2em;
   margin-bottom: 0.5em;
 }
+.v-data-table {
+  background: #252c48 !important;
+}
+.v-sheet {
+  background: #252c48 !important;
+}
+.v-expansion-panel {
+  background: #252c48 !important;
+}
 </style>

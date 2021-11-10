@@ -6,18 +6,18 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
+          color="primary"
           dark
           v-bind="attrs"
           v-on="on"
           class="button"
-          outlined
         >
           Deposit from Stellar
         </v-btn>
       </template>
 
       <v-card class="card">
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Deposit TFT
         </v-card-title>
 
@@ -107,11 +107,7 @@ export default {
   margin-top: 1em;
   margin-bottom: 0.2em !important;
 }
-.v-btn {
-  background: #8116F0 !important;
-  border-color: #8116F0 !important;
-}
-.v-btn__content {
-  color: white !important;
+.card {
+  background: #252c48 !important;
 }
 </style>

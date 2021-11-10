@@ -10,13 +10,14 @@
           v-on="on"
           :loading="loading"
           class="btn"
+          color="primary"
         >
           Create Twin
         </v-btn>
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Create Twin
         </v-card-title>
 
@@ -81,5 +82,8 @@ export default {
 }
 .v-btn {
   background: white !important;
+}
+.v-card {
+  background: #252c48 !important;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <div>
-  <h3>Farm</h3>
+  <h3>Farms</h3>
 
     <v-data-table
       :headers="headers"
@@ -10,6 +10,7 @@
       item-key="name"
       show-expand
       class="elevation-1"
+      dark
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -326,5 +327,11 @@ export default {
 .stellarv2address {
   display: flex;
   justify-content: space-between;
+}
+.v-data-table {
+  background: #252c48 !important;
+}
+.v-sheet {
+  background: #252c48 !important;
 }
 </style>

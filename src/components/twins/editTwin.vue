@@ -6,18 +6,18 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
+          color="primary"
           dark
           v-bind="attrs"
           v-on="on"
           :loading="loading"
-          outlined
         >
           Edit Twin
         </v-btn>
       </template>
 
       <v-card>
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Edit Twin
         </v-card-title>
 
@@ -79,11 +79,7 @@ export default {
 .text {
   margin-top: 2em !important;
 }
-.v-btn {
-  background: #8116F0 !important;
-  border-color: #8116F0 !important;
-}
-.v-btn__content {
-  color: white !important;
+.v-card {
+  background: #252c48 !important;
 }
 </style>

@@ -6,19 +6,19 @@
     >
       <template v-slot:activator="{ on, attrs }">
         <v-btn
+          color="primary"
           dark
           v-bind="attrs"
           v-on="on"
           :loading="loading"
           class="button"
-          outlined
         >
           Withdraw to Stellar
         </v-btn>
       </template>
 
       <v-card class="card">
-        <v-card-title class="text-h5 grey lighten-2">
+        <v-card-title class="text-h5">
           Withdraw TFT
         </v-card-title>
 
@@ -136,11 +136,7 @@ export default {
 .button {
   width: 100% !important;
 }
-.v-btn {
-  background: #8116F0 !important;
-  border-color: #8116F0 !important;
-}
-.v-btn__content {
-  color: white !important;
+.card {
+  background: #252c48 !important;
 }
 </style>

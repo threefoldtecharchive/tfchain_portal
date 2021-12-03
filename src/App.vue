@@ -35,8 +35,14 @@
       <span v-else class="mr-2">Connected</span>
     </v-app-bar>
 
-    <v-main>
-      <router-view />
+    <v-main >
+      <router-view v-if="!loadingApi" />
+      <v-overlay v-else>
+        <v-progress-circular
+          indeterminate
+          size="64"
+        ></v-progress-circular>
+      </v-overlay>
     </v-main>
 
   </v-app>
@@ -52,8 +58,15 @@ export default {
     'connected'
   ]),
 
+  data () {
+    return {
+      loadingApi: true,
+    }
+  },
+
   async mounted () {
-    this.$store.dispatch('getAPI')
+    await this.$store.dispatch('getAPI')
+    this.loadingApi = false
   }
 };
 </script>

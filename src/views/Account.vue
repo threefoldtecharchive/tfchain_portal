@@ -80,7 +80,7 @@ import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
 import { activateThroughActivationService } from '../lib/activation' 
-// import { getBalance } from '../lib/balance'
+import { getBalance } from '../lib/balance'
 
 export default {
   name: 'Account',
@@ -89,31 +89,26 @@ export default {
     Farm,
     Twin
   },
-
-  computed: {
-    activated () {
-      if (this.$route.params.account) {
-        return this.$route.params.account.balance > 0 || this.activationCompleted
-      } else {
-        return false
-      }
-    }
-  },
-
+  
   data () {
     return {
+      activated: true,
       selectedItem: 'twins',
       loadingActivation: false,
-      activationCompleted: false,
-      balance: this.$route.params.account.balance || 0
+      balance: 0
     }
   },
 
   ...mapGetters(['api']),
 
   async mounted () {
-    if (!this.$store.state.api) this.$router.push('/')
-    this.$store.dispatch('getAPI')
+    if (!this.$store.state.api) return
+    const api = await this.$store.state.api
+    this.balance = await getBalance(api, this.$route.params.accountID)
+    console.log(this.balance)
+    if (this.balance === 0) {
+      this.activated = false
+    }
   },
 
   methods: {
@@ -123,7 +118,7 @@ export default {
         .then(() => {
           setTimeout(() => {
             this.loadingActivation = false
-            this.activationCompleted = true
+            this.activated = true
             this.$store.dispatch('getAccounts')}
           , 7000)
         })

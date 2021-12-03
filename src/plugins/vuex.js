@@ -57,7 +57,7 @@ const store = new Vuex.Store({
       const accountsWithBalance = await appendBalanceToAccounts(api, accounts)
 
       context.commit('setAccounts', { accounts: accountsWithBalance })
-      context.commit('setSnackbar', { snackbar: true })     
+      context.commit('setSnackbar', { snackbar: true })
     },
     showSnackbar(context) {
       context.commit('setSnackbar', { snackbar: true })

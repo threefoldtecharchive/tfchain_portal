@@ -86,6 +86,7 @@ export default {
   ...mapGetters(['api']),
 
   async mounted () {
+    if (!this.$store.state.api) return
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.twin = await getTwin(this.$store.state.api, this.twinID)
     this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7

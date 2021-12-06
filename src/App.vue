@@ -25,12 +25,10 @@
       </div>
 
       <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
         text
         v-if="!connected"
       >
-        <span class="mr-2">Connect</span>
+        <span class="mr-2">Not connected</span>
       </v-btn>
       <span v-else class="mr-2">Connected</span>
     </v-app-bar>

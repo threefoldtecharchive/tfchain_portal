@@ -2,6 +2,8 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import { connect } from '../lib/connect'
 import { getBalance } from '../lib/balance'
+import { getConfig } from '../config.js'
+
 
 import {
   web3Accounts,
@@ -17,7 +19,9 @@ const store = new Vuex.Store({
     snackbar: false,
     connected: false,
     accounts: [],
-    loadingAPI: true
+    loadingAPI: true,
+    network: 'dev',
+    config: getConfig('dev'),
   },
   mutations: {
     setAPI (state, payload) {
@@ -34,6 +38,10 @@ const store = new Vuex.Store({
     },
     setLoadingAPI (state, payload) {
       state.loadingAPI = payload.loading
+    },
+    setNetwork (state, payload) {
+      state.config = getConfig(payload.network)
+      state.network = payload.network
     }
   },
   getters: {
@@ -41,14 +49,21 @@ const store = new Vuex.Store({
     accounts: state => { return state.accounts },
     snackbar: state => { return state.snackbar },
     connected: state => { return state.connected },
-    loadingAPI: state => { return state.loadingAPI }
+    loadingAPI: state => { return state.loadingAPI },
+    network: state => { return state.network },
+    config: state => { return state.config },
   },
   actions: {
     async getAPI(context) {
-      if (context.state.api) return
- 
+      //if (context.state.api) return
+
       context.commit('setLoadingAPI', { loading: true })
-      const api = await connect()
+
+      console.log(`getting api with ${context.state.network}`)
+      const url = getConfig(context.state.network).wsUrl
+
+      console.log('connecting to', url);
+      const api = await connect(url)
       await web3Enable('TF Chain UI')
       const accounts = await web3Accounts()
       context.commit('setAPI', { api })

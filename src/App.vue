@@ -20,6 +20,11 @@
 
       <v-spacer></v-spacer>
       
+       <v-btn
+      >
+        <modal></modal>
+      </v-btn>
+
       <div class="explorer">
         <v-btn color="primary" @click="$router.push('/explorer')">Capacity Explorer</v-btn>
       </div>
@@ -30,7 +35,7 @@
       >
         <span class="mr-2">Not connected</span>
       </v-btn>
-      <span v-else class="mr-2">Connected</span>
+      <span v-else class="mr-2" >Connected</span>
     </v-app-bar>
 
     <v-main >
@@ -46,15 +51,23 @@
   </v-app>
 </template>
 
+
 <script>
+import modal from './components/Modal.vue';
+
 import { mapState } from 'vuex'
 
 export default {
   name: 'App',
 
+  components: {
+    modal
+  },
+
   computed: mapState([
     'connected'
   ]),
+
 
   data () {
     return {
@@ -66,6 +79,7 @@ export default {
     await this.$store.dispatch('getAPI')
     this.loadingApi = false
   }
+
 };
 </script>
 <style scoped>
@@ -83,3 +97,4 @@ export default {
   background: #1b203a !important;
 }
 </style>
+

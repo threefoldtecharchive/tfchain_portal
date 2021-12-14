@@ -1,11 +1,12 @@
 const { ApiPromise, WsProvider } = require('@polkadot/api')
 const types = require('../types.json')
 
-import config from '../config'
+export async function connect (url) {
 
-export async function connect () {
   // Initialise the provider to connect to the local node
-  const provider = new WsProvider(config.wsUrl)
+  const provider = new WsProvider(url)
+
+  console.log(`Connecting to ${url}`)
 
   // Create the API and wait until ready
   const api = await ApiPromise.create({ provider, types })

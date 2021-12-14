@@ -68,19 +68,28 @@
 
 <script>
 import stellar from 'stellar-sdk'
-import config from '../../config'
+import { mapGetters } from 'vuex'
 
 const TFT_ASSET = 'TFT'
-const server = new stellar.Server(config.horizonUrl)
 
 export default {
   name: 'Withdraw',
   props: ['balance', 'withdraw', 'loading'],
+  
+  
+  computed: {
+    ...mapGetters(['config']),
+    server() {
+      return new stellar.Server(this.config.horizonUrl)
+    },
+    bridgeWallet() {
+      return this.config.bridgeTftAddress
+    },
+  },
 
   data () {
     return {
       open: false,
-      bridgeWallet: config.bridgeTftAddress,
       target: '',
       userAmount: this.balance,
       errorMessages: '',
@@ -89,6 +98,7 @@ export default {
 
   methods: {
     submitWithdraw () {
+      console.log('submit withdraw')
       if (this.target === '' || this.userAmount <= 0) {
         this.error = true
         return
@@ -98,26 +108,33 @@ export default {
       this.open = false
     },
     async targetCheck () {
-      if (this.target === config.bridgeTftAddress) {
+      console.log('targetCheck')
+      if (this.target === this.config.bridgeTftAddress) {
         this.errorMessages = 'Target cannot be the bridge wallet!'
+        console.log('targetCheck', '1')
         return false
       }
 
       try {
         // check if the account provided exists on stellar
-        const account = await server.loadAccount(this.target)
+        const account = await this.server.loadAccount(this.target)
         // check if the account provided has the appropriate trustlines
-        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === config.tftAssetIssuer)
+        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === this.config.tftAssetIssuer)
         if (!includes) {
           this.errorMessages = 'Address does not have a valid trustline to TFT'
+          console.log('targetCheck', '2')
           return false
         }
       } catch (error) {
         this.errorMessages = 'Address not found'
+        console.log('targetCheck', '3')
+        console.log(error)
+
         return false
       }
 
       this.errorMessages = ''
+      console.log('targetCheck', '4')
       return true
     },
   }

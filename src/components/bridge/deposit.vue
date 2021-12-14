@@ -65,18 +65,32 @@
 </template>
 
 <script>
-import config from '../../config'
 import QrcodeVue from 'qrcode.vue'
+import { mapGetters } from 'vuex'
+
 
 export default {
   name: 'Deposit',
   props: ['twinID'],
 
+  computed: {
+    ...mapGetters(['config']),
+    depositWallet() {
+      return this.config.bridgeTftAddress
+    },
+    qrCodeText() {
+      return `TFT:${this.depositWallet}?memo=twin_${this.twinID}`
+    },
+  },
+
+  mounted () {
+    console.log(`cfg: ${this.config.bridgeTftAddress}`)
+  },
+
   data () {
+
     return {
       open: false,
-      depositWallet: config.bridgeTftAddress,
-      qrCodeText: `TFT:${config.bridgeTftAddress}?message=twin_${this.twinID}&sender=me`
     }
   },
 

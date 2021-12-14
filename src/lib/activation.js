@@ -1,9 +1,8 @@
 import axios from "axios"
-import config from '../config'
 import { Keyring } from '@polkadot/keyring'
 
-export async function activateThroughActivationService (substrateAccountID) {
-  return axios.post(`${config.activationServiceUrl}/activation/activate`, {
+export async function activateThroughActivationService (url, substrateAccountID) {
+  return axios.post(`${url}/activation/activate`, {
     substrateAccountID
   })
 }

@@ -52,20 +52,32 @@
 </template>
 <script>
 import stellar from 'stellar-sdk'
-import config from '../../config'
+import { mapGetters } from 'vuex'
 
 const TFT_ASSET = 'TFT'
-const server = new stellar.Server(config.horizonUrl)
+
+
 
 export default {
   name: 'CreateV2Address',
   props: ['addV2Address', 'loading', 'text'],
+  
 
+  computed: {
+    ...mapGetters(['config'])
+  },
+
+  mounted () {
+    this.server = new stellar.Server(this.config.horizonUrl)
+  },
+
+ 
   data: () => {
     return {
       open: false,
       address: '',
-      errorMessages: ''
+      errorMessages: '',
+      server: undefined,
     }
   },
   methods: {
@@ -77,9 +89,9 @@ export default {
     async addressCheck () {
       try {
         // check if the account provided exists on stellar
-        const account = await server.loadAccount(this.address)
+        const account = await this.server.loadAccount(this.address)
         // check if the account provided has the appropriate trustlines
-        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === config.tftAssetIssuer)
+        const includes = account.balances.find(b => b.asset_code === TFT_ASSET && b.asset_issuer === this.config.tftAssetIssuer)
         if (!includes) {
           this.errorMessages = 'Address does not have a valid trustline to TFT'
           return false

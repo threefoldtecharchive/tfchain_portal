@@ -70,6 +70,7 @@ import { mapState } from 'vuex'
       }
     }
   }
+  
 </script>
 <style scoped>
 .main {

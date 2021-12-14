@@ -71,7 +71,6 @@ import { getBalance } from '../lib/balance'
 import { withdraw } from '../lib/bridge'
 import { getMoreFunds } from '../lib/activation'
 import { hex2a } from '../lib/util'
-import config from '../config'
 
 export default {
   name: 'Twin',
@@ -83,7 +82,9 @@ export default {
     Withdraw
   },
 
-  ...mapGetters(['api']),
+  computed: {
+    ...mapGetters(['api'])
+  },
 
   async mounted () {
     if (!this.$store.state.api) return
@@ -99,7 +100,7 @@ export default {
       loadingCreateTwin: false,
       balance: 0,
       loadingWithdraw: false,
-      network: config.network,
+      network: this.$store.state.network,
       loadingGetMoreTft: false,
     }
   },

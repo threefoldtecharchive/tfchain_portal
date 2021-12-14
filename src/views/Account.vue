@@ -99,7 +99,9 @@ export default {
     }
   },
 
-  ...mapGetters(['api']),
+  computed: {
+    ...mapGetters(['config'])
+  },
 
   async mounted () {
     if (!this.$store.state.api) return
@@ -114,7 +116,7 @@ export default {
   methods: {
     activateAccount() {
       this.loadingActivation = true
-      activateThroughActivationService(this.$route.params.accountID)
+      activateThroughActivationService(this.$store.state.config.activationServiceUrl, this.$route.params.accountID)
         .then(() => {
           setTimeout(() => {
             this.loadingActivation = false

@@ -14,7 +14,7 @@
           v-bind="attrs"
           v-on="on"
         >
-          NETWORK
+          <v-icon>mdi-web</v-icon>
         </v-btn>
       </template>
       <v-card

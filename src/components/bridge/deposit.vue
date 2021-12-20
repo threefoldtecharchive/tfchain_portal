@@ -33,7 +33,7 @@
 
             <div class="qr">
               <span>Or use Threefold connect to scan this qr code</span>
-              <qrcode-vue :value="qrCodeText" :size="200" level="H" />
+              <qrcode-vue :value="qrCodeText" :size="400" level="H" />
             </div>
 
             <v-alert

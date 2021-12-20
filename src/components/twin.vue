@@ -16,7 +16,7 @@
           <Deposit :twinID="this.twinID"/>
           <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
           <v-btn 
-            v-if="network === 'dev' && balance < 100"
+            v-if="network === 'dev' && balance < 10000"
             color="primary"
             dark
             @click="getMoreTft"

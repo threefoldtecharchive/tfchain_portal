@@ -4,6 +4,7 @@
   <v-navigation-drawer
     permanent
     height="100vh"
+    v-if="activated"
   >
     <v-list-item>
       <v-list-item-content>
@@ -53,23 +54,14 @@
   </v-navigation-drawer>
   
   <v-container>
-    <Twin v-if="selectedItem === 'twins'" />
-    <Farm v-if="selectedItem === 'farms'" />
-    <v-overlay
-      :absolute="true"
-      :value="!activated"
-    >
-      <div class="overlay">
-        <p>Activate your account in order to continue</p>
-        <v-btn 
-          color="secondary" 
-          @click="activateAccount()"
-          :loading="loadingActivation"
-        >
-          Activate Account
-        </v-btn>
-      </div>
-    </v-overlay>
+    <Twin v-if="selectedItem === 'twins' && activated" />
+    <Farm v-if="selectedItem === 'farms' && activated" />
+    <TermsAndConditions
+      :open="!activated"
+      :accept="acceptTermsAndConditions"
+      :documentLink="documentLink"
+      :loading="loadingActivation"
+    />
   </v-container>
 
   </div>
@@ -79,15 +71,18 @@
 import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
-import { activateThroughActivationService } from '../lib/activation' 
+import TermsAndConditions from './TermsAndConditions.vue'
+import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
+// import axios from 'axios'
 
 export default {
   name: 'Account',
 
   components: {
     Farm,
-    Twin
+    Twin,
+    TermsAndConditions
   },
   
   data () {
@@ -95,7 +90,9 @@ export default {
       activated: true,
       selectedItem: 'twins',
       loadingActivation: false,
-      balance: 0
+      balance: 0,
+      documentLink: 'https://library.threefold.me/info/legal/#/terms_conditions_all3',
+      documentHash: ''
     }
   },
 
@@ -105,22 +102,51 @@ export default {
     if (!this.$store.state.api) return
     const api = await this.$store.state.api
     this.balance = await getBalance(api, this.$route.params.accountID)
-    console.log(this.balance)
-    if (this.balance === 0) {
+    const hasAcceptedTandC = await userAcceptedTermsAndConditions(api, this.$route.params.accountID, this.documentLink, this.documentHash)
+    if (this.balance === 0 || !hasAcceptedTandC) {
       this.activated = false
     }
   },
 
   methods: {
-    activateAccount() {
+    acceptTermsAndConditions() {
       this.loadingActivation = true
       activateThroughActivationService(this.$route.params.accountID)
         .then(() => {
           setTimeout(() => {
-            this.loadingActivation = false
-            this.activated = true
-            this.$store.dispatch('getAccounts')}
-          , 7000)
+            // todo, hash document content
+            acceptTermsAndCondition(this.$store.state.api, this.$route.params.accountID, this.documentLink, '', (res) => {
+              console.log(res)
+              if (res instanceof Error) {
+                console.log(res)
+                return
+              }
+
+              const { events = [], status } = res
+              console.log(`Current status is ${status.type}`)
+              switch (status.type) {
+                case 'Ready': this.$toasted.show(`Transaction submitted`)
+              }
+            
+              if (status.isFinalized) {
+                console.log(`Transaction included at blockHash ${status.asFinalized}`)
+            
+                // Loop through Vec<EventRecord> to display all events
+                events.forEach(({ phase, event: { data, method, section } }) => {
+                  console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+                  if (section === 'system' && method === 'ExtrinsicSuccess') {
+                    this.$toasted.show('Terms and Conditions accepted!')
+                    this.loadingActivation = false
+                    this.activated = true
+                    this.$store.dispatch('getAccounts')
+                  } else if (section === 'system' && method === 'ExtrinsicFailed') {
+                    this.$toasted.show('Failed to accept Terms and Conditions!')
+                    this.loadingActivation = false
+                  }
+                })
+              }
+            })
+          }, 1500)
         })
         .catch(err => {
           this.loadingActivation = false

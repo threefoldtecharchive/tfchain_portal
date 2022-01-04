@@ -66,3 +66,20 @@ export async function setFarmPayoutV2Address (address, api, id, v2address, callb
     .addStellarPayoutV2Address(id, v2address)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
+
+export async function acceptTermsAndConditionFarmer (api, address, documentLink, documentHash, callback) {
+  const injector = await web3FromAddress(address)
+  api.tx.tfgridModule
+    .farmerAcceptTc(documentLink, documentHash)
+    .signAndSend(address, { signer: injector.signer }, callback)
+}
+
+export async function farmerAcceptedTermsAndConditions (api, address, documentLink, documentHash) {
+  const tcs = await api.query.tfgridModule.farmersTermsAndConditions(address)
+  const parsedTcs = tcs.toJSON()
+
+  console.log(documentHash)
+  console.log(documentLink)
+
+  return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink).length > 0
+}

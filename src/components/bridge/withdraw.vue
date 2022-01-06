@@ -24,7 +24,7 @@
 
         <v-card-text>
           <div class="textContainer">
-            Interact with the bridge in order to withdraw your TFT to Stellar
+            Interact with the bridge in order to withdraw your TFT to Stellar <b>(withdraw fee is: {{ fee }} TFT)</b>
           </div>
           <v-text-field
             label="Stellar Target Wallet address"
@@ -43,7 +43,7 @@
             required
             :rules="[
               () => !!userAmount || 'This field is required',
-              () => !!userAmount && userAmount >= 0 || 'Amount must be larger then 0',
+              () => !!userAmount && userAmount > fee || 'Amount must be larger then 0 and larger then the withdrawfee',
               () => !!userAmount && userAmount < this.balance || 'Amount cannot exceed balance',
             ]"
           ></v-text-field>
@@ -75,7 +75,7 @@ const server = new stellar.Server(config.horizonUrl)
 
 export default {
   name: 'Withdraw',
-  props: ['balance', 'withdraw', 'loading'],
+  props: ['balance', 'withdraw', 'loading', 'fee'],
 
   data () {
     return {

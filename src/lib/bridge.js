@@ -8,3 +8,13 @@ export async function withdraw (address, api, target, amount, callback) {
     .swapToStellar(target, amount*1e7)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
+
+export async function getDepositFee (api) {
+  const fee = await api.query.tftBridgeModule.depositFee()
+  return fee.toNumber() / 1e7
+}
+
+export async function getWithdrawFee (api) {
+  const fee = await api.query.tftBridgeModule.withdrawFee()
+  return fee.toNumber() / 1e7
+}

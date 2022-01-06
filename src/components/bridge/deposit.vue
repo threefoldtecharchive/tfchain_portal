@@ -27,6 +27,7 @@
             <ul>
               <li>Destination: <b>{{ depositWallet }}</b></li>
               <li>Memo Text: <b>twin_{{twinID}}</b></li>
+              <li>Amount: should be larger than {{ fee }} TFT <b>(deposit fee is: {{ fee }} TFT)</b></li>
             </ul>
 
             <v-divider/>
@@ -70,7 +71,7 @@ import QrcodeVue from 'qrcode.vue'
 
 export default {
   name: 'Deposit',
-  props: ['twinID'],
+  props: ['twinID', 'fee'],
 
   data () {
     return {

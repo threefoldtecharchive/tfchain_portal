@@ -13,8 +13,13 @@
         </div>
         <v-divider></v-divider>
         <div class="button-group">
-          <Deposit :twinID="this.twinID"/>
-          <Withdraw :balance="this.balance" :withdraw="this.withdraw" :loading="this.loadingWithdraw" />
+          <Deposit :twinID="this.twinID" :fee="this.depositFee" />
+          <Withdraw
+            :balance="this.balance"
+            :withdraw="this.withdraw"
+            :loading="this.loadingWithdraw"
+            :fee="this.withdrawFee"
+          />
           <v-btn 
             v-if="network === 'dev' && balance < 10000"
             color="primary"
@@ -68,7 +73,7 @@ import Deposit from './bridge/deposit.vue'
 import Withdraw from './bridge/withdraw.vue'
 import { getTwin, getTwinID, createTwin, updateTwin } from '../lib/twin'
 import { getBalance } from '../lib/balance'
-import { withdraw } from '../lib/bridge'
+import { withdraw, getDepositFee, getWithdrawFee } from '../lib/bridge'
 import { getMoreFunds } from '../lib/activation'
 import { hex2a } from '../lib/util'
 import config from '../config'
@@ -90,6 +95,10 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.twin = await getTwin(this.$store.state.api, this.twinID)
     this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7
+    this.depositFee = await getDepositFee(this.$store.state.api)
+    this.withdrawFee = await getWithdrawFee(this.$store.state.api)
+    console.log(this.depositFee)
+    console.log(this.withdrawFee)
   },
 
   data () {
@@ -101,6 +110,8 @@ export default {
       loadingWithdraw: false,
       network: config.network,
       loadingGetMoreTft: false,
+      depositFee: 0,
+      withdrawFee: 0
     }
   },
 

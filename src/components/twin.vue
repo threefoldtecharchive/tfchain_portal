@@ -97,8 +97,6 @@ export default {
     this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7
     this.depositFee = await getDepositFee(this.$store.state.api)
     this.withdrawFee = await getWithdrawFee(this.$store.state.api)
-    console.log(this.depositFee)
-    console.log(this.withdrawFee)
   },
 
   data () {

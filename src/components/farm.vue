@@ -120,6 +120,10 @@ import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
 import CreateV2Address from './farms/createV2Address.vue'
 import TermsAndConditions from '../views/TermsAndConditions.vue'
+import axios from 'axios'
+import blake from 'blakejs'
+
+const DOCUMENT_RAW_LINK = 'https://raw.githubusercontent.com/threefoldfoundation/info_legal/master/wiki/terms_conditions_farmingsolution.md'
 
 export default {
   name: 'Farm',
@@ -138,9 +142,9 @@ export default {
 
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
-
+    let document = await axios.get(DOCUMENT_RAW_LINK)
+    this.documentHash = blake.blake2bHex(document.data)
     this.acceptedTc = await farmerAcceptedTermsAndConditions(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash)
-    console.log(this.acceptedTc)
   },
 
   data () {
@@ -170,7 +174,7 @@ export default {
     accept () {
       this.loadingAcceptTc = true
       // todo, hash document content
-      acceptTermsAndConditionFarmer(this.$store.state.api, this.$route.params.accountID, this.documentLink, '', (res) => {
+      acceptTermsAndConditionFarmer(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash, (res) => {
         console.log(res)
         if (res instanceof Error) {
           console.log(res)

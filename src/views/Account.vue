@@ -74,7 +74,10 @@ import Twin from '../components/twin.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
-// import axios from 'axios'
+import axios from 'axios'
+import blake from 'blakejs'
+
+const DOCUMENT_RAW_LINK = 'https://raw.githubusercontent.com/threefoldfoundation/info_legal/master/wiki/terms_conditions_all.md'
 
 export default {
   name: 'Account',
@@ -102,7 +105,10 @@ export default {
     if (!this.$store.state.api) return
     const api = await this.$store.state.api
     this.balance = await getBalance(api, this.$route.params.accountID)
+    let document = await axios.get(DOCUMENT_RAW_LINK)
+    this.documentHash = blake.blake2bHex(document.data)
     const hasAcceptedTandC = await userAcceptedTermsAndConditions(api, this.$route.params.accountID, this.documentLink, this.documentHash)
+
     if (this.balance === 0 || !hasAcceptedTandC) {
       this.activated = false
     }
@@ -115,7 +121,7 @@ export default {
         .then(() => {
           setTimeout(() => {
             // todo, hash document content
-            acceptTermsAndCondition(this.$store.state.api, this.$route.params.accountID, this.documentLink, '', (res) => {
+            acceptTermsAndCondition(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash, (res) => {
               console.log(res)
               if (res instanceof Error) {
                 console.log(res)

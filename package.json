@@ -12,6 +12,7 @@
     "@polkadot/extension-dapp": "^0.40.4",
     "@polkadot/ui-keyring": "^0.86.2",
     "axios": "^0.24.0",
+    "blakejs": "^1.1.1",
     "core-js": "^3.6.5",
     "qrcode.vue": "1.7.0",
     "stellar-sdk": "^9.0.1",

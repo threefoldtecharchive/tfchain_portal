@@ -32,8 +32,5 @@ export async function userAcceptedTermsAndConditions (api, address, documentLink
   const tcs = await api.query.tfgridModule.usersTermsAndConditions(address)
   const parsedTcs = tcs.toJSON()
 
-  console.log(documentHash)
-  console.log(documentLink)
-
-  return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink).length > 0
+  return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink && hex2a(tc.document_hash) === documentHash).length > 0
 }

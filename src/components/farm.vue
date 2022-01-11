@@ -123,7 +123,7 @@ import TermsAndConditions from '../views/TermsAndConditions.vue'
 import axios from 'axios'
 import blake from 'blakejs'
 
-const DOCUMENT_RAW_LINK = 'https://raw.githubusercontent.com/threefoldfoundation/info_legal/master/wiki/terms_conditions_farmingsolution.md'
+const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/terms_conditions_farmer3'
 
 export default {
   name: 'Farm',

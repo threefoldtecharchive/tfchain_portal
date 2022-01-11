@@ -77,7 +77,7 @@ import { getBalance } from '../lib/balance'
 import axios from 'axios'
 import blake from 'blakejs'
 
-const DOCUMENT_RAW_LINK = 'https://raw.githubusercontent.com/threefoldfoundation/info_legal/master/wiki/terms_conditions_all.md'
+const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/terms_conditions_all3'
 
 export default {
   name: 'Account',

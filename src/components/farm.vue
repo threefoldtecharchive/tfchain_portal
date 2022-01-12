@@ -1,8 +1,8 @@
 <template>
   <div>
-  <h3 v-if="acceptedTc">Farms</h3>
+    <h3 v-if="acceptedTc">Farms</h3>
     <TermsAndConditions
-      :open="!acceptedTc"
+      :open="!acceptedTc && !loading"
       :documentLink="documentLink"
       :accept="accept"
       :loading="loadingAcceptTc"
@@ -157,18 +157,20 @@ export default {
   ...mapGetters(['api']),
 
   async mounted () {
+    this.loading = true
     this.$store.dispatch('getAPI')
-
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
-    this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
     let document = await axios.get(DOCUMENT_RAW_LINK)
     this.documentHash = blake.blake2bHex(document.data)
     this.acceptedTc = await farmerAcceptedTermsAndConditions(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash)
+    this.loading = false
+    this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
   },
 
   data () {
     return {
+      loading: false,
       farms: [],
       nodes: [],
       twinID: 0,

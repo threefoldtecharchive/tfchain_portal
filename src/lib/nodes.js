@@ -17,8 +17,6 @@ export async function getNodesByFarmID (api, farms) {
     return parsedNode
   })
 
-  console.log(parsedNodes)
-
   const filteredNodes = parsedNodes.filter(node => farmIDs.includes(node.farm_id))
 
   const farmNodes = await filteredNodes.map(async node => {
@@ -27,28 +25,40 @@ export async function getNodesByFarmID (api, farms) {
     node.balance = await getBalance(api, twin.account_id)
     node.balance = node.balance / 1e7
 
-    node.uptime = await getNodesUptime(node.id)
-    node.usedResources = await getNodeUsedResources(node.id)
+    try {
+      node.uptime = await getNodesUptime(node.id)
+    } catch (error) {
+      node.uptime = 0
+    }
 
-    console.log(node)
+    try {
+      node.usedResources = await getNodeUsedResources(node.id)
+    } catch (error) {
+      node.usedResources = {
+        sru: 0,
+        hru: 0,
+        mru: 0,
+        cru: 0,
+      }
+    }
 
     return node
   })
 
-  return Promise.all(farmNodes)
+  return await Promise.all(farmNodes)
 }
 
 export async function getNodesUptime (nodeId) {
   const res = await axios.post(config.graphqlUrl, {
     query: `{ nodes(where: {nodeId_eq:${nodeId}}) { uptime }}`,
     operation: 'getNode'
-  })
+  }, { timeout: 250 })
 
   return res.data.data.nodes[0].uptime
 }
 
 export async function getNodeUsedResources (nodeId) {
-  const res = await axios.get(`${config.gridproxyUrl}nodes/${nodeId}`)
+  const res = await axios.get(`${config.gridproxyUrl}nodes/${nodeId}`, { timeout: 250 })
 
   return res.data.capacity.used
 }

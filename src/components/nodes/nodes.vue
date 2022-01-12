@@ -6,18 +6,19 @@
       :items="nodes"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
-      item-key="name"
+      item-key="id"
       show-expand
       class="elevation-1"
       dark
+      sort-by="id"
     >
       <template v-slot:top>
         <v-toolbar flat>
           <v-toolbar-title>Your Nodes</v-toolbar-title>
         </v-toolbar>
       </template>
-      <template v-slot:expanded-item="{ item }">
-        <td :colspan="headers.length">
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length" key="item.id">
           <v-col>
             <v-container fluid>
               <v-row>

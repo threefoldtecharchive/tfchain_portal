@@ -42,6 +42,10 @@ spec:
             value: {{ .Values.stellar_bridge_address }}
           - name: VUE_APP_EXPLORER_URL
             value: {{ .Values.explorer_url }}
+          - name: VUE_APP_GRAPHQL_URL
+            value: {{ .Values.grapqhl_url }}
+          - name: VUE_APP_GRIDPROXY_URL
+            value: {{ .Values.gridproxy_url }}
           - name: VUE_APP_NETWORK
             value: {{ .Values.network }}
           ports:

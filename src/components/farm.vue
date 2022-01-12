@@ -107,19 +107,37 @@
         </td>
       </template>
     </v-data-table>
-
+    <NodesTable
+      :nodes="nodes"
+      :deleteNode="deleteNodeFarm" 
+      :loadingDelete="loadingNodeDelete"
+      :fundNodeWallet="fundNodeWallet"
+      :loadingTransfer="loadingFundNode"
+    />
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getFarm, createFarm, deleteIP, createIP, setFarmPayoutV2Address, acceptTermsAndConditionFarmer, farmerAcceptedTermsAndConditions } from '../lib/farm'
+import {
+  getFarm,
+  createFarm,
+  deleteIP,
+  createIP,
+  setFarmPayoutV2Address,
+  acceptTermsAndConditionFarmer,
+  farmerAcceptedTermsAndConditions,
+  deleteNode
+} from '../lib/farm'
 import { getTwinID } from '../lib/twin'
+import { getNodesByFarmID } from '../lib/nodes'
+import { transfer } from '../lib/transfer'
 import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
 import CreateV2Address from './farms/createV2Address.vue'
 import TermsAndConditions from '../views/TermsAndConditions.vue'
+import NodesTable from '../components/nodes/nodes.vue'
 import axios from 'axios'
 import blake from 'blakejs'
 
@@ -132,7 +150,8 @@ export default {
     CreateFarm,
     PublicIPTable,
     CreateV2Address,
-    TermsAndConditions
+    TermsAndConditions,
+    NodesTable,
   },
 
   ...mapGetters(['api']),
@@ -142,6 +161,7 @@ export default {
 
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
+    this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
     let document = await axios.get(DOCUMENT_RAW_LINK)
     this.documentHash = blake.blake2bHex(document.data)
     this.acceptedTc = await farmerAcceptedTermsAndConditions(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash)
@@ -150,11 +170,14 @@ export default {
   data () {
     return {
       farms: [],
+      nodes: [],
       twinID: 0,
       loadingCreateFarm: false,
       loadingDeleteIP: false,
       loadingCreateIP: false,
       loadingAddV2Address: false,
+      loadingNodeDelete: false,
+      loadingFundNode: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -350,6 +373,76 @@ export default {
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Farm creation faild!')
               this.loadingAddV2Address = false
+            }
+          })
+        }
+      })
+      .catch(() => this.loadingCreateFarm = false)
+    },
+    deleteNodeFarm (nodeID) {
+      this.loadingNodeDelete = true
+      deleteNode(this.$route.params.accountID, this.$store.state.api, nodeID, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'NodeDeleted') {
+              this.$toasted.show('Node deleted from farm!')
+              this.loadingNodeDelete = false
+              getNodesByFarmID(this.$store.state.api, this.farms)
+                .then(nodes => this.nodes = nodes)
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Node deletion failed')
+              this.loadingNodeDelete = false
+            }
+          })
+        }
+      })
+      .catch(() => this.loadingCreateFarm = false)
+    },
+    fundNodeWallet (address) {
+      this.loadingFundNode = true
+      transfer(this.$route.params.accountID, this.$store.state.api, address, 1, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'balances' && method === 'Transfer') {
+              this.$toasted.show('Transfered 1 TFT to your node')
+              this.loadingFundNode = false
+              getNodesByFarmID(this.$store.state.api, this.farms)
+                .then(nodes => this.nodes = nodes)
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Transfer failed')
+              this.loadingFundNode = false
             }
           })
         }

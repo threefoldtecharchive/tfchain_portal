@@ -80,3 +80,11 @@ export async function farmerAcceptedTermsAndConditions (api, address, documentLi
 
   return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink && hex2a(tc.document_hash) === documentHash).length > 0
 }
+
+export async function deleteNode (address, api, nodeId, callback) {
+  const injector = await web3FromAddress(address)
+
+  api.tx.tfgridModule
+    .deleteNodeFarm(nodeId)
+    .signAndSend(address, { signer: injector.signer }, callback)
+}

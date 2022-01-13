@@ -77,7 +77,7 @@ import { getBalance } from '../lib/balance'
 import axios from 'axios'
 import blake from 'blakejs'
 
-const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/terms_conditions_all3'
+const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/tfgrid/terms_conditions_tfgrid3'
 
 export default {
   name: 'Account',
@@ -94,7 +94,7 @@ export default {
       selectedItem: 'twins',
       loadingActivation: false,
       balance: 0,
-      documentLink: 'https://library.threefold.me/info/legal/#/terms_conditions_all3',
+      documentLink: 'https://library.threefold.me/info/legal/#/tfgrid/terms_conditions_tfgrid3',
       documentHash: ''
     }
   },

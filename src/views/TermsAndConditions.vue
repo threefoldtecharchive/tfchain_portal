@@ -15,6 +15,9 @@
           width="100%"
         />
       </div>
+      <div class="footer">
+        <span>If you accept these terms and conditions, you will get prompted to sign using your account on TFchain.</span>
+      </div>
       <v-btn
         class="btn"
         text
@@ -48,5 +51,17 @@ export default {
   background: grey;
   display: flex;
   margin: auto;
+}
+.footer {
+  width: 70%;
+  background: white;
+  color: black;
+  margin: auto;
+  margin-bottom: 1em;
+  height: 50px;
+  padding: 0.3em;
+  text-align: center;
+  border-radius: 0.3em;
+  font-size: 22px;
 }
 </style>

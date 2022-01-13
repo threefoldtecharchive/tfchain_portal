@@ -1,15 +1,7 @@
 <template>
   <div>
-    <h3 v-if="acceptedTc">Farms</h3>
-    <TermsAndConditions
-      :open="!acceptedTc && !loading"
-      :documentLink="documentLink"
-      :accept="accept"
-      :loading="loadingAcceptTc"
-    />
-
+    <h3>Farms</h3>
     <v-data-table
-      v-if="acceptedTc"
       :headers="headers"
       :items="farms"
       :single-expand="singleExpand"
@@ -125,8 +117,6 @@ import {
   deleteIP,
   createIP,
   setFarmPayoutV2Address,
-  acceptTermsAndConditionFarmer,
-  farmerAcceptedTermsAndConditions,
   deleteNode
 } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
@@ -136,12 +126,7 @@ import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
 import CreateV2Address from './farms/createV2Address.vue'
-import TermsAndConditions from '../views/TermsAndConditions.vue'
 import NodesTable from '../components/nodes/nodes.vue'
-import axios from 'axios'
-import blake from 'blakejs'
-
-const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/terms_conditions_farmer3'
 
 export default {
   name: 'Farm',
@@ -150,27 +135,20 @@ export default {
     CreateFarm,
     PublicIPTable,
     CreateV2Address,
-    TermsAndConditions,
     NodesTable,
   },
 
   ...mapGetters(['api']),
 
   async mounted () {
-    this.loading = true
     this.$store.dispatch('getAPI')
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
-    let document = await axios.get(DOCUMENT_RAW_LINK)
-    this.documentHash = blake.blake2bHex(document.data)
-    this.acceptedTc = await farmerAcceptedTermsAndConditions(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash)
-    this.loading = false
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
   },
 
   data () {
     return {
-      loading: false,
       farms: [],
       nodes: [],
       twinID: 0,
@@ -189,47 +167,9 @@ export default {
         { text: 'Certification type', value: 'certification_type' },
         { text: 'Pricing Policy ID', value: 'pricing_policy_id' },
       ],
-      acceptedTc: false,
-      documentLink: 'https://library.threefold.me/info/legal/#/terms_conditions_farmer3',
-      documentHash: '',
-      loadingAcceptTc: false
     }
   },
   methods: {
-    accept () {
-      this.loadingAcceptTc = true
-      // todo, hash document content
-      acceptTermsAndConditionFarmer(this.$store.state.api, this.$route.params.accountID, this.documentLink, this.documentHash, (res) => {
-        console.log(res)
-        if (res instanceof Error) {
-          console.log(res)
-          return
-        }
-
-        const { events = [], status } = res
-        console.log(`Current status is ${status.type}`)
-        switch (status.type) {
-          case 'Ready': this.$toasted.show(`Transaction submitted`)
-        }
-      
-        if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`)
-      
-          // Loop through Vec<EventRecord> to display all events
-          events.forEach(({ phase, event: { data, method, section } }) => {
-            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
-            if (section === 'system' && method === 'ExtrinsicSuccess') {
-              this.$toasted.show('Terms and Conditions accepted!')
-              this.loadingAcceptTc = false
-              this.acceptedTc = true
-            } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Failed to accept Terms and Conditions!')
-              this.loadingAcceptTc = false
-            }
-          })
-        }
-      })
-    },
     decodeHex (input) {
       return hex2a(input)
     },

@@ -26,7 +26,10 @@ export async function getNodesByFarmID (api, farms) {
     node.balance = node.balance / 1e7
 
     try {
-      node.uptime = await getNodesUptime(node.id)
+      const res = await getNodesUptime(node.id)
+      const { uptime, updatedAt } = res
+      node.uptime = uptime
+      node.updatedAt = updatedAt
     } catch (error) {
       node.uptime = 0
     }
@@ -50,11 +53,11 @@ export async function getNodesByFarmID (api, farms) {
 
 export async function getNodesUptime (nodeId) {
   const res = await axios.post(config.graphqlUrl, {
-    query: `{ nodes(where: {nodeId_eq:${nodeId}}) { uptime }}`,
+    query: `{ nodes(where: {nodeId_eq:${nodeId}}) { uptime, updatedAt }}`,
     operation: 'getNode'
   }, { timeout: 250 })
 
-  return res.data.data.nodes[0].uptime
+  return res.data.data.nodes[0]
 }
 
 export async function getNodeUsedResources (nodeId) {

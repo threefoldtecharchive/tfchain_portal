@@ -52,9 +52,15 @@
                 </v-flex>
               </v-row>
               <v-row>
-                <v-flex xs3 class="text-left pr-2">Uptime (in seconds)</v-flex>
+                <v-flex xs3 class="text-left pr-2">Uptime</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
                   <span>{{ item.uptime | secondsToReadable  }}</span>
+                </v-flex>
+              </v-row>
+              <v-row>
+                <v-flex xs3 class="text-left pr-2">Updated at</v-flex>
+                <v-flex class="text-truncate font-weight-bold">
+                  <span>{{ item.updatedAt }}</span>
                 </v-flex>
               </v-row>
               <v-row>
@@ -133,7 +139,6 @@
         </td>
       </template>
       <template v-slot:item.actions="{ item }">
-        
         <v-progress-circular
           v-if="loadingDelete"
           indeterminate
@@ -173,6 +178,11 @@
           <span>Fund a node's wallet</span>
         </v-tooltip>
       </template>
+      <template v-slot:item.status="{ item }">
+        <p class="text-left mt-1 mb-0">
+          <v-chip :color="getStatus(item).color" dark>{{ getStatus(item).status }}</v-chip>
+        </p>
+      </template>
     </v-data-table>
 
     <v-dialog v-model="dialogDelete" max-width="700px">
@@ -204,6 +214,8 @@
   </div>
 </template>
 <script>
+import moment from 'moment'
+
 export default {
   name: 'NodesTable',
   props: ['nodes', 'deleteNode', 'fundNodeWallet', 'loadingDelete', 'loadingTransfer'],
@@ -219,6 +231,7 @@ export default {
         { text: 'Farm ID', value: 'farm_id' },
         { text: 'Country', value: 'country' },
         { text: 'City', value: 'city' },
+        { text: 'Status', value: 'status' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
     }
@@ -267,6 +280,18 @@ export default {
         this.editedIndex = -1
       })
     },
+
+    getStatus (node) {
+      const { updatedAt } = node
+      const startTime = moment()
+      const end = moment(updatedAt)
+      console.log(`now ${startTime}`)
+      console.log(`node updated at ${end}`)
+      const minutes = startTime.diff(end, 'minutes')
+
+      if (minutes < 15) return { color: 'green', status: 'up' }
+      else if (minutes > 16 && minutes < 20) { return { color: 'orange', status: 'likely down' } } else return { color: 'red', status: 'down' }
+    }
   },
 
   watch: {

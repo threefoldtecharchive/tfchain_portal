@@ -103,8 +103,6 @@
       :nodes="nodes"
       :deleteNode="deleteNodeFarm" 
       :loadingDelete="loadingNodeDelete"
-      :fundNodeWallet="fundNodeWallet"
-      :loadingTransfer="loadingFundNode"
     />
   </div>
 </template>
@@ -121,7 +119,6 @@ import {
 } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
 import { getNodesByFarmID } from '../lib/nodes'
-import { transfer } from '../lib/transfer'
 import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
@@ -157,7 +154,6 @@ export default {
       loadingCreateIP: false,
       loadingAddV2Address: false,
       loadingNodeDelete: false,
-      loadingFundNode: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -350,41 +346,6 @@ export default {
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Node deletion failed')
               this.loadingNodeDelete = false
-            }
-          })
-        }
-      })
-      .catch(() => this.loadingCreateFarm = false)
-    },
-    fundNodeWallet (address) {
-      this.loadingFundNode = true
-      transfer(this.$route.params.accountID, this.$store.state.api, address, 1, (res) => {
-        console.log(res)
-        if (res instanceof Error) {
-          console.log(res)
-          return
-        }
-
-        const { events = [], status } = res
-        console.log(`Current status is ${status.type}`)
-        switch (status.type) {
-          case 'Ready': this.$toasted.show(`Transaction submitted`)
-        }
-      
-        if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`)
-      
-          // Loop through Vec<EventRecord> to display all events
-          events.forEach(({ phase, event: { data, method, section } }) => {
-            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
-            if (section === 'balances' && method === 'Transfer') {
-              this.$toasted.show('Transfered 1 TFT to your node')
-              this.loadingFundNode = false
-              getNodesByFarmID(this.$store.state.api, this.farms)
-                .then(nodes => this.nodes = nodes)
-            } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Transfer failed')
-              this.loadingFundNode = false
             }
           })
         }

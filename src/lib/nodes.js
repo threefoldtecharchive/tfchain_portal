@@ -55,13 +55,13 @@ export async function getNodesUptime (nodeId) {
   const res = await axios.post(config.graphqlUrl, {
     query: `{ nodes(where: {nodeId_eq:${nodeId}}) { uptime, updatedAt }}`,
     operation: 'getNode'
-  }, { timeout: 250 })
+  }, { timeout: 1000 })
 
   return res.data.data.nodes[0]
 }
 
 export async function getNodeUsedResources (nodeId) {
-  const res = await axios.get(`${config.gridproxyUrl}nodes/${nodeId}`, { timeout: 250 })
+  const res = await axios.get(`${config.gridproxyUrl}nodes/${nodeId}`, { timeout: 1000 })
 
   return res.data.capacity.used
 }

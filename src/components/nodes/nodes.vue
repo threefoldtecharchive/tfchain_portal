@@ -157,26 +157,6 @@
           </template>
           <span>Delete a node</span>
         </v-tooltip>
-
-        <v-progress-circular
-          v-if="loadingTransfer"
-          indeterminate
-          color="primary"
-        ></v-progress-circular>
-        <v-tooltip bottom v-else>
-          <template v-slot:activator="{ on, attrs }">
-            <v-icon
-              medium
-              @click="fundNode(item)"
-              v-on="on"
-              v-bind="attrs"
-              
-            >
-              mdi-hand-coin
-            </v-icon>
-          </template>
-          <span>Fund a node's wallet</span>
-        </v-tooltip>
       </template>
       <template v-slot:item.status="{ item }">
         <p class="text-left mt-1 mb-0">
@@ -198,19 +178,6 @@
       </v-card>
     </v-dialog>
 
-    <v-dialog v-model="dialogFundNode" max-width="700px">
-      <v-card>
-        <v-card-title class="text-h5">Fund your node's wallet with 1 TFT</v-card-title>
-        <v-card-text>This action will send 1 TFT from your farmers wallet to your node's wallet to ensure operations</v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeFundDialog">Cancel</v-btn>
-          <v-btn color="blue darken-1" text @click="fundNodeConfirm">OK</v-btn>
-          <v-spacer></v-spacer>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
   </div>
 </template>
 <script>
@@ -218,11 +185,10 @@ import moment from 'moment'
 
 export default {
   name: 'NodesTable',
-  props: ['nodes', 'deleteNode', 'fundNodeWallet', 'loadingDelete', 'loadingTransfer'],
+  props: ['nodes', 'deleteNode', 'loadingDelete'],
   data () {
     return {
       dialogDelete: false,
-      dialogFundNode: false,
       editedIndex: -1,
       expanded: [],
       singleExpand: true,
@@ -250,12 +216,6 @@ export default {
       this.dialogDelete = true
     },
 
-    fundNode (item) {
-      this.editedIndex = this.nodes.indexOf(item)
-      this.editedItem = Object.assign({}, item)
-      this.dialogFundNode = true
-    },
-
     deleteItemConfirm () {
       // this.nodes.splice(this.editedIndex, 1)
       this.deleteNode(this.editedItem.id)
@@ -269,28 +229,14 @@ export default {
       })
     },
 
-    fundNodeConfirm () {
-      this.fundNodeWallet(this.editedItem.accountId)
-      this.closeFundDialog()
-    },
-
-    closeFundDialog () {
-      this.dialogFundNode = false
-      this.$nextTick(() => {
-        this.editedIndex = -1
-      })
-    },
-
     getStatus (node) {
       const { updatedAt } = node
       const startTime = moment()
       const end = moment(updatedAt)
-      console.log(`now ${startTime}`)
-      console.log(`node updated at ${end}`)
-      const minutes = startTime.diff(end, 'minutes')
+      const hours = startTime.diff(end, 'hours')
 
-      if (minutes < 15) return { color: 'green', status: 'up' }
-      else if (minutes > 16 && minutes < 20) { return { color: 'orange', status: 'likely down' } } else return { color: 'red', status: 'down' }
+      if (hours < 2) return { color: 'green', status: 'up' }
+      else if (hours > 2 && hours < 3) { return { color: 'orange', status: 'likely down' } } else return { color: 'red', status: 'down' }
     }
   },
 

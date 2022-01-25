@@ -1,6 +1,4 @@
 import { hex2a } from './util'
-import { getTwin } from './twin'
-import { getBalance } from './balance'
 import config from '../config'
 
 import axios from 'axios'
@@ -20,11 +18,6 @@ export async function getNodesByFarmID (api, farms) {
   const filteredNodes = parsedNodes.filter(node => farmIDs.includes(node.farm_id))
 
   const farmNodes = await filteredNodes.map(async node => {
-    const twin = await getTwin(api, node.twin_id)
-    node.accountId = twin.account_id
-    node.balance = await getBalance(api, twin.account_id)
-    node.balance = node.balance / 1e7
-
     try {
       const res = await getNodesUptime(node.id)
       const { uptime, updatedAt } = res

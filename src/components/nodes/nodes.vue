@@ -81,12 +81,6 @@
                   <span>{{ item.farming_policy_id }}</span>
                 </v-flex>
               </v-row>
-              <v-row>
-                <v-flex xs3 class="text-left pr-2">Balance</v-flex>
-                <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.balance }} TFT</span>
-                </v-flex>
-              </v-row>
 
               <v-row>
                 <span>For more information visit the Capacity Explorer</span>

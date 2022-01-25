@@ -77,15 +77,9 @@
     </div>
 
     <v-footer padless app>
-      <v-col
-        class="text-right"
-        cols="8"
-      >
-        {{ new Date().getFullYear() }} — <strong>TF Chain Portal</strong>
-      </v-col>
-      <v-col class="text-right" cols="4">
-        <v-icon color="green">mdi-circle-slice-8</v-icon>
-        <span>connected</span>
+      <v-col class="footer">
+        <span class="footertext">{{ new Date().getFullYear() }} — <strong>TF Chain Portal</strong></span>
+        <span class="connection"><v-icon color="green">mdi-circle-slice-8</v-icon><strong>connected</strong></span>
       </v-col>
     </v-footer>
 
@@ -232,7 +226,15 @@ export default {
 .v-icon {
   color:white;
 }
-.v-footer {
+.footer {
   background: #252c48 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+}
+.connection {
+  position: absolute;
+  right: 0;
+  margin-right: 0.5em;
 }
 </style>

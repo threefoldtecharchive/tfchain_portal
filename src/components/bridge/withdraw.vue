@@ -2,21 +2,9 @@
   <div>
     <v-dialog
       v-model="open"
-      width="60vw"
+      width="70vw"
+      v-on:click:outside="close"
     >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          :loading="loading"
-          class="button"
-        >
-          Withdraw to Stellar
-        </v-btn>
-      </template>
-
       <v-card class="card">
         <v-card-title class="text-h5">
           Withdraw TFT
@@ -40,7 +28,6 @@
             label="Amount"
             v-model="userAmount"
             type="number"
-            required
             :rules="[
               () => !!userAmount || 'This field is required',
               () => !!userAmount && userAmount > fee || 'Amount must be larger then 0 and larger then the withdrawfee',
@@ -57,6 +44,7 @@
             color="primary"
             text
             @click="submitWithdraw()"
+            :loading="loading"
           >
             Submit withdraw
           </v-btn>
@@ -75,11 +63,10 @@ const server = new stellar.Server(config.horizonUrl)
 
 export default {
   name: 'Withdraw',
-  props: ['balance', 'withdraw', 'loading', 'fee'],
+  props: ['open', 'close', 'balance', 'withdraw', 'loading', 'fee'],
 
   data () {
     return {
-      open: false,
       bridgeWallet: config.bridgeTftAddress,
       target: '',
       userAmount: this.balance,
@@ -95,9 +82,9 @@ export default {
       }
 
       this.withdraw(this.target, this.userAmount)
-      this.open = false
     },
     async targetCheck () {
+      if (this.target == '') return false
       if (this.target === config.bridgeTftAddress) {
         this.errorMessages = 'Target cannot be the bridge wallet!'
         return false

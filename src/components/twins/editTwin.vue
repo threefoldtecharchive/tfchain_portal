@@ -3,8 +3,9 @@
     <v-dialog
       v-model="open"
       width="500"
+      v-on:click:outside="close"
     >
-      <template v-slot:activator="{ on, attrs }">
+      <!-- <template v-slot:activator="{ on, attrs }">
         <v-btn
           color="primary"
           dark
@@ -14,7 +15,7 @@
         >
           Edit Twin
         </v-btn>
-      </template>
+      </template> -->
 
       <v-card>
         <v-card-title class="text-h5">
@@ -51,7 +52,7 @@
 <script>
 export default {
   name: 'App',
-  props: ['edit', 'loading', 'twinIP'],
+  props: ['open', 'close', 'edit', 'loading', 'twinIP'],
 
   mounted () {
     this.newIP = this.twinIP
@@ -59,14 +60,12 @@ export default {
 
   data: () => {
     return {
-      open: false,
       newIP: ''
     }
   },
 
   methods: {
     editTwin() {
-      this.open = false
       this.edit(this.newIP)
     }
   }

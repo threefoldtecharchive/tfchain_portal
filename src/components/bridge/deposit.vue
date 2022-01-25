@@ -2,20 +2,9 @@
   <div>
     <v-dialog
       v-model="open"
-      width="60vw"
+      width="70vw"
+      v-on:click:outside="close"
     >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          color="primary"
-          dark
-          v-bind="attrs"
-          v-on="on"
-          class="button"
-        >
-          Deposit from Stellar
-        </v-btn>
-      </template>
-
       <v-card class="card">
         <v-card-title class="text-h5">
           Deposit TFT
@@ -55,7 +44,7 @@
           <v-btn
             color="primary"
             text
-            @click="open = false"
+            @click="close"
           >
             Close
           </v-btn>
@@ -71,11 +60,10 @@ import QrcodeVue from 'qrcode.vue'
 
 export default {
   name: 'Deposit',
-  props: ['twinID', 'fee'],
+  props: ['open', 'close', 'twinID', 'fee'],
 
   data () {
     return {
-      open: false,
       depositWallet: config.bridgeTftAddress,
       qrCodeText: `TFT:${config.bridgeTftAddress}?message=twin_${this.twinID}&sender=me`
     }
@@ -105,8 +93,8 @@ export default {
   margin: auto;
 }
 .qr span {
-  margin-top: 1em;
-  margin-bottom: 0.2em !important;
+  margin-top: 1em !important;
+  margin-bottom: 1em !important;
 }
 .card {
   background: #252c48 !important;

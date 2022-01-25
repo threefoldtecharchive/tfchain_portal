@@ -100,6 +100,7 @@
       </template>
     </v-data-table>
     <NodesTable
+      :loading="loadingNodes"
       :nodes="nodes"
       :deleteNode="deleteNodeFarm" 
       :loadingDelete="loadingNodeDelete"
@@ -142,6 +143,7 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    this.loadingNodes = false
   },
 
   data () {
@@ -154,6 +156,7 @@ export default {
       loadingCreateIP: false,
       loadingAddV2Address: false,
       loadingNodeDelete: false,
+      loadingNodes: true,
       expanded: [],
       singleExpand: true,
       headers: [

@@ -11,6 +11,7 @@
       class="elevation-1"
       dark
       sort-by="id"
+      :loading="loading"
     >
       <template v-slot:top>
         <v-toolbar flat>
@@ -179,7 +180,7 @@ import moment from 'moment'
 
 export default {
   name: 'NodesTable',
-  props: ['nodes', 'deleteNode', 'loadingDelete'],
+  props: ['loading', 'nodes', 'deleteNode', 'loadingDelete'],
   data () {
     return {
       dialogDelete: false,

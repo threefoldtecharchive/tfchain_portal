@@ -81,7 +81,7 @@
               <v-row>
                 <v-flex xs3 class="text-left">Bootstrap node image</v-flex>
                 <v-flex xs3>
-                  <a class="link" v-bind:href="'https://dev.bootstrap.grid.tf/'" target="blank">Take me to bootstrap page</a>
+                  <a class="link" v-bind:href="'https://v3.bootstrap.grid.tf/'" target="blank">Take me to bootstrap page</a>
                 </v-flex>
               </v-row>
 

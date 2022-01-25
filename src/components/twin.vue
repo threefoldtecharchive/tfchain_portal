@@ -1,10 +1,10 @@
 <template>
-  <div v-if="twin && twin.id !== 0">
+  <div v-if="twin && twin.id !== 0" class="main">
 
     <v-row class="no-gutters">
       <div class="balance">
         <h2>{{balance.toFixed(2)}} TFT</h2>
-        <h3 v-if="network !== 'test'">$ {{balanceInUSD.toFixed(2)}}</h3>
+        <h3 v-if="network !== 'dev'">$ {{balanceInUSD.toFixed(2)}}</h3>
       </div>
     </v-row>
 
@@ -111,7 +111,7 @@ export default {
     this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7
     this.depositFee = await getDepositFee(this.$store.state.api)
     this.withdrawFee = await getWithdrawFee(this.$store.state.api)
-    if (config.network !== 'test') {
+    if (config.network !== 'dev') {
       const res = await axios.get('https://min-api.cryptocompare.com/data/price?fsym=3ft&tsyms=USD')
       this.balanceInUSD = res.data.USD * this.balance
     }
@@ -301,6 +301,10 @@ export default {
 }
 </script>
 <style scoped>
+.main {
+  width: 90% !important;
+  margin: auto;
+}
 .account {
   /* background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%); */
   background: #252c48;

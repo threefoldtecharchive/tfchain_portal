@@ -15,22 +15,14 @@
           width="40"
           @click="$router.push('/')"
         />
-        <span>TF Chain UI</span>
+        <span>TF Chain Portal</span>
       </div>
 
       <v-spacer></v-spacer>
       
-      <div class="explorer">
+      <!-- <div class="explorer">
         <v-btn color="primary" @click="$router.push('/explorer')">Capacity Explorer</v-btn>
-      </div>
-
-      <v-btn
-        text
-        v-if="!connected"
-      >
-        <span class="mr-2">Not connected</span>
-      </v-btn>
-      <span v-else class="mr-2">Connected</span>
+      </div> -->
     </v-app-bar>
 
     <v-main >
@@ -42,7 +34,6 @@
         ></v-progress-circular>
       </v-overlay>
     </v-main>
-
   </v-app>
 </template>
 

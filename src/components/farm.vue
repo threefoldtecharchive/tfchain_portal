@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main">
     <h3>Farms</h3>
     <v-data-table
       :headers="headers"
@@ -359,6 +359,10 @@ export default {
 }
 </script>
 <style scoped>
+.main {
+  width: 90% !important;
+  margin: auto;
+}
 .farmInfo {
   display: flex !important;
   flex-direction: column !important;

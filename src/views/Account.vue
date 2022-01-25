@@ -1,68 +1,93 @@
 <template>
-  <div class="accounts-app">
+  <div>
+    <div class="accounts-app">
+      <v-navigation-drawer
+        permanent
+        v-if="activated"
+        app
+      >
+        <v-list-item>
+          <v-list-item-content>
+            <v-list-item-title class="text-h6">
+              Account
+            </v-list-item-title>
+            <v-list-item-subtitle>
+              {{ this.$route.params.accountID }}
+            </v-list-item-subtitle>
+          </v-list-item-content>
+        </v-list-item>
 
-  <v-navigation-drawer
-    permanent
-    height="100vh"
-    v-if="activated"
-  >
-    <v-list-item>
-      <v-list-item-content>
-        <v-list-item-title class="text-h6">
-          Account Management
-        </v-list-item-title>
-        <v-list-item-subtitle>
-          {{ this.$route.params.accountID }}
-        </v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
+        <v-divider></v-divider>
 
-    <v-divider></v-divider>
+        <v-list
+          dense
+          nav
+        >
+          <v-list-item link @click="selectedItem = 'twins'">
+            <v-list-item-icon>
+              <v-icon>mdi-account</v-icon>
+            </v-list-item-icon>
 
-    <v-list
-      dense
-      nav
-    >
-      <!-- <v-list-item link @click="selectedItem = 'wallet'">
-        <v-list-item-icon>
-          <v-icon>mdi-wallet</v-icon>
-        </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Twin</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item link @click="selectedItem = 'transfer'">
+            <v-list-item-icon>
+              <v-icon>mdi-swap-horizontal</v-icon>
+            </v-list-item-icon>
 
-        <v-list-item-content>
-          <v-list-item-title>Wallet</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item> -->
-      <v-list-item link @click="selectedItem = 'twins'">
-        <v-list-item-icon>
-          <v-icon>mdi-account</v-icon>
-        </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Transfer</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item link @click="selectedItem = 'farms'">
+            <v-list-item-icon>
+              <v-icon>mdi-barley</v-icon>
+            </v-list-item-icon>
 
-        <v-list-item-content>
-          <v-list-item-title>Twin</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-      <v-list-item link @click="selectedItem = 'farms'">
-        <v-list-item-icon>
-          <v-icon>mdi-barley</v-icon>
-        </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title>Farms</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item link @click="selectedItem = 'capacity'">
+            <v-list-item-icon>
+              <v-icon>mdi-earth</v-icon>
+            </v-list-item-icon>
 
-        <v-list-item-content>
-          <v-list-item-title>Farms</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-  </v-navigation-drawer>
-  
-  <v-container>
-    <Twin v-if="selectedItem === 'twins' && activated" />
-    <Farm v-if="selectedItem === 'farms' && activated" />
-    <TermsAndConditions
-      :open="!activated"
-      :accept="acceptTermsAndConditions"
-      :documentLink="documentLink"
-      :loading="loadingActivation"
-    />
-  </v-container>
+            <v-list-item-content>
+              <v-list-item-title>Capacity</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    
+      <v-container>
+        <Twin v-if="selectedItem === 'twins' && activated" />
+        <Farm v-if="selectedItem === 'farms' && activated" />
+        <Transfer :balance="balance" :getBalance="getBalance" v-if="selectedItem === 'transfer' && activated" />
+        <Explorer v-if="selectedItem === 'capacity' && activated" />
+        <TermsAndConditions
+          :open="!activated"
+          :accept="acceptTermsAndConditions"
+          :documentLink="documentLink"
+          :loading="loadingActivation"
+        />
+      </v-container>
+    </div>
+
+    <v-footer padless app>
+      <v-col
+        class="text-right"
+        cols="8"
+      >
+        {{ new Date().getFullYear() }} — <strong>TF Chain Portal</strong>
+      </v-col>
+      <v-col class="text-right" cols="4">
+        <v-icon color="green">mdi-circle-slice-8</v-icon>
+        <span>connected</span>
+      </v-col>
+    </v-footer>
 
   </div>
 </template>
@@ -71,6 +96,8 @@
 import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
+import Transfer from '../components/transfer.vue'
+import Explorer from '../components/explorer.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
@@ -85,7 +112,9 @@ export default {
   components: {
     Farm,
     Twin,
-    TermsAndConditions
+    TermsAndConditions,
+    Transfer,
+    Explorer
   },
   
   data () {
@@ -115,6 +144,9 @@ export default {
   },
 
   methods: {
+    getBalance () {
+      getBalance(this.$store.state.api, this.$route.params.accountID).then(b => this.balance = b)
+    },
     acceptTermsAndConditions() {
       this.loadingActivation = true
       activateThroughActivationService(this.$route.params.accountID)
@@ -169,7 +201,6 @@ export default {
 }
 .account {
   background-color: rgb(255, 255, 255);
-  height: 100%;
   margin-top: 0.2em;
   margin-bottom: 1em;
   border-radius: 0.3em;
@@ -188,7 +219,9 @@ export default {
   background: #252c48 !important;
 }
 .v-list-item__title {
+  font-size: 18px !important;
   color:white !important;
+  height: 100% !important;
 }
 .v-list-item__subtitle {
   color:white !important;
@@ -198,5 +231,8 @@ export default {
 }
 .v-icon {
   color:white;
+}
+.v-footer {
+  background: #252c48 !important;
 }
 </style>

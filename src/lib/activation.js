@@ -4,7 +4,6 @@ import { Keyring } from '@polkadot/keyring'
 import {
   web3FromAddress,
 } from '@polkadot/extension-dapp'
-import { hex2a } from "./util"
 
 export async function activateThroughActivationService (substrateAccountID) {
   return axios.post(`${config.activationServiceUrl}/activation/activate`, {
@@ -28,9 +27,9 @@ export async function acceptTermsAndCondition (api, address, documentLink, docum
     .signAndSend(address, { signer: injector.signer }, callback)
 }
 
-export async function userAcceptedTermsAndConditions (api, address, documentLink, documentHash) {
+export async function userAcceptedTermsAndConditions (api, address) {
   const tcs = await api.query.tfgridModule.usersTermsAndConditions(address)
   const parsedTcs = tcs.toJSON()
-
-  return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink && hex2a(tc.document_hash) === documentHash).length > 0
+  console.log(`signed tcs: ${parsedTcs.length}`)
+  return parsedTcs.length > 0
 }

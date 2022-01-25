@@ -38,7 +38,7 @@ export default {
 </script>
 <style scoped>
 .tc {
-  margin-top: 10em;
+  margin-top: 5em;
   margin-bottom: 1em;
   width: 70% !important;
   height: 70% !important;
@@ -62,6 +62,6 @@ export default {
   padding: 0.3em;
   text-align: center;
   border-radius: 0.3em;
-  font-size: 22px;
+  font-size: 16px;
 }
 </style>

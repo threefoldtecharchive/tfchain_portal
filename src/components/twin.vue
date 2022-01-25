@@ -1,6 +1,5 @@
 <template>
   <div v-if="twin && twin.id !== 0">
-    
     <v-row class="no-gutters">
       <v-col cols="12" sm="12" class="account">
         <div class="title">

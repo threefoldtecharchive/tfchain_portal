@@ -20,7 +20,7 @@
               :twinID="this.twinID"
               :fee="this.depositFee"
               :open="this.openDeposit"
-              :close="() => this.openDeposit = false"
+              :close="() => openDeposit = false"
             />
           </div>
         </v-card>
@@ -38,7 +38,7 @@
               :loading="this.loadingWithdraw"
               :fee="this.withdrawFee"
               :open="this.openWithdraw"
-              :close="() => this.openWithdraw = false"
+              :close="() => openWithdraw = false"
             />
           </div>
         </v-card>
@@ -46,33 +46,39 @@
     </v-row>
     
     <v-row class="no-gutters">
-      <v-col cols="12" sm="12" class="account">
-        <div class="title">
-          <h3>Twin</h3>
-          <v-icon @click="openEditTwin=true">mdi-pencil</v-icon>
-        </div>
-        <div class="twinInfo">
-          <p>ID: {{twinID}}</p>
-          <p>IP: {{ decodeHex(twin.ip) }}</p>
-          <p>Address: {{ twin.account_id }}</p>
-        </div>
-        <div class="button-group">
-          <EditTwin
-            :open="openEditTwin"
-            :edit="editTwin"
-            :loading="loadingCreateTwin"
-            :twinIP="decodeHex(twin.ip)"
-            :close="() => this.openEditTwin = false"
-          />
-        </div>
-      </v-col>
+      <v-card class="twincard">
+        <v-card-title class="twinCardTitle">
+          <v-icon>mdi-account-circle-outline</v-icon>
+          <h3>Twin</h3> 
+        </v-card-title>
+        <v-card-text>
+          <strong>
+            <p> ID: {{twinID}}</p>
+          </strong>
+          <strong>
+            <p>IP: {{ decodeHex(twin.ip) }}</p>
+          </strong>
+          <strong>
+            <p>Address: {{ twin.account_id }}</p>
+          </strong>
+        </v-card-text>
+        <v-icon class="pencil" @click="openEditTwin=true">mdi-account-edit</v-icon>
+      </v-card>
     </v-row>
+
+    <EditTwin
+      :open="openEditTwin"
+      :edit="editTwin"
+      :loading="loadingEditTwin"
+      :twinIP="decodeHex(twin.ip)"
+      :close="() => openEditTwin = false"
+    />
   </div>
   <div v-else>
     <div class="actions">
       <CreateTwin
-        :create="createTwinFromAccount"
-        :loading="loadingCreateTwin"
+        :create="this.createTwin"
+        :loading="this.loading"
       />
     </div>
   </div>
@@ -84,15 +90,15 @@ import CreateTwin from './twins/createTwin.vue'
 import EditTwin from './twins/editTwin.vue'
 import Deposit from './bridge/deposit.vue'
 import Withdraw from './bridge/withdraw.vue'
-import { getTwin, getTwinID, createTwin, updateTwin } from '../lib/twin'
+import { getTwin, updateTwin } from '../lib/twin'
 import { getBalance } from '../lib/balance'
 import { withdraw, getDepositFee, getWithdrawFee } from '../lib/bridge'
-import { getMoreFunds } from '../lib/activation'
 import { hex2a } from '../lib/util'
 import config from '../config'
 import axios from 'axios'
 
 export default {
+  props: ['createTwin', 'twin', 'twinID', 'loading'],
   name: 'Twin',
 
   components: {
@@ -106,9 +112,8 @@ export default {
 
   async mounted () {
     if (!this.$store.state.api) return
-    this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
-    this.twin = await getTwin(this.$store.state.api, this.twinID)
     this.balance = await getBalance(this.$store.state.api, this.$route.params.accountID) / 1e7
+    console.log(this.balance)
     this.depositFee = await getDepositFee(this.$store.state.api)
     this.withdrawFee = await getWithdrawFee(this.$store.state.api)
     if (config.network !== 'dev') {
@@ -119,19 +124,16 @@ export default {
 
   data () {
     return {
-      twinID: 0,
-      twin: undefined,
-      loadingCreateTwin: false,
       balance: 0,
       balanceInUSD: 0,
       loadingWithdraw: false,
       network: config.network,
-      loadingGetMoreTft: false,
       depositFee: 0,
       withdrawFee: 0,
       openDeposit: false,
       openWithdraw: false,
       openEditTwin: false,
+      loadingEditTwin: false,
     }
   },
 
@@ -139,54 +141,15 @@ export default {
     decodeHex (input) {
       return hex2a(input)
     },
-    createTwinFromAccount (ip) {
-      this.loadingCreateTwin = true
-      createTwin(this.$route.params.accountID, this.$store.state.api, ip, (res) => {
-        console.log(res)
-        if (res instanceof Error) {
-          console.log(res)
-          return
-        }
 
-        const { events = [], status } = res
-        console.log(`Current status is ${status.type}`)
-        switch (status.type) {
-          case 'Ready': this.$toasted.show(`Transaction submitted`)
-        }
-      
-        if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`)
-      
-          // Loop through Vec<EventRecord> to display all events
-          events.forEach(({ phase, event: { data, method, section } }) => {
-            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
-            if (section === 'tfgridModule' && method === 'TwinStored') {
-              this.$toasted.show('Twin created!')
-              const twinStoredEvent = data[0]
-              getTwin(this.$store.state.api, twinStoredEvent.id)
-                .then(twin => {
-                  this.twin = twin
-                  this.twinID = twin.id
-                  this.loadingCreateTwin = false
-                  getBalance(this.$store.state.api, this.$route.params.accountID)
-                    .then(balance => {
-                      this.balance = balance / 1e7
-                    })
-                })
-            } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Twin creation failed!')
-              this.loadingCreateTwin = false
-            }
-          })
-        }
-      })
-    },
     editTwin (ip) {
-      this.loadingCreateTwin = true
+      this.loadingEditTwin = true
       updateTwin(this.$route.params.accountID, this.$store.state.api, ip, (res) => {
         console.log(res)
+        console.log('helllo')
         if (res instanceof Error) {
           console.log(res)
+          console.log(`kek`)
           return
         }
 
@@ -209,7 +172,8 @@ export default {
                 .then(twin => {
                   this.twin = twin
                   this.twinID = twin.id
-                  this.loadingCreateTwin = false
+                  this.loadingEditTwin = false
+                  this.openEditTwin = false
                   getBalance(this.$store.state.api, this.$route.params.accountID)
                     .then(balance => {
                       this.balance = balance / 1e7
@@ -217,10 +181,15 @@ export default {
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Twin creation failed!')
-              this.loadingCreateTwin = false
+              this.loadingEditTwin = false
+              this.openEditTwin = false
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingEditTwin = false
+        this.openEditTwin = false
       })
     },
     withdraw (target, amount) {
@@ -259,44 +228,12 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingWithdraw = false
+        this.openWithdraw = false
       })
     },
-    getMoreTft () {
-      this.loadingGetMoreTft = true
-      getMoreFunds(this.$route.params.accountID, this.$store.state.api, (res) => {
-        console.log(res)
-        if (res instanceof Error) {
-          console.log(res)
-          return
-        }
-
-        const { events = [], status } = res
-        console.log(`Current status is ${status.type}`)
-        switch (status.type) {
-          case 'Ready': this.$toasted.show(`Transaction submitted`)
-        }
-      
-        if (status.isFinalized) {
-          console.log(`Transaction included at blockHash ${status.asFinalized}`)
-      
-          // Loop through Vec<EventRecord> to display all events
-          events.forEach(({ phase, event: { data, method, section } }) => {
-            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
-            if (section === 'balances' && method === 'Transfer') {
-              this.$toasted.show('Get more TFT sumbitted!')
-              this.loadingGetMoreTft = false
-              getBalance(this.$store.state.api, this.$route.params.accountID)
-                .then(balance => {
-                  this.balance = balance / 1e7
-                })
-            } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Get more TFT failed!')
-              this.loadingGetMoreTft = false
-            }
-          })
-        }
-      })
-    }
   }
 }
 </script>
@@ -334,6 +271,11 @@ export default {
   background: linear-gradient(90deg, rgba(88,66,242,1) 35%, rgba(109,85,230,1) 100%);
 }
 
+.twincard {
+  background: #252c48;
+  width: 100%;
+}
+
 .v-card {
   margin-bottom: 1em;
   padding: 1em !important;
@@ -342,8 +284,21 @@ export default {
   justify-content: space-between;
 }
 
+.twinCardTitle {
+  justify-content: center;
+}
+
+.v-card__text p {
+  font-size: 22px;
+}
+
+.pencil {
+  font-size: 3em;
+}
+
 .v-card__text {
-  align-self: flex-end !important;
+  align-self: center !important;
+  margin-top: 2em;
   /* width: 30% !important; */
 }
 

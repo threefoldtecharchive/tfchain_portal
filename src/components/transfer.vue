@@ -101,6 +101,9 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingTransfer = false
       })
     }
   }

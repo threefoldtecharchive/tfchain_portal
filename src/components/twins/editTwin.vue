@@ -41,6 +41,7 @@
             color="primary"
             text
             @click="editTwin()"
+            :loading="loading"
           >
             Save
           </v-btn>

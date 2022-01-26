@@ -5,7 +5,7 @@ import {
 export async function withdraw (address, api, target, amount, callback) {
   try {
     const injector = await web3FromAddress(address)
-    api.tx.tftBridgeModule
+    return api.tx.tftBridgeModule
       .swapToStellar(target, amount*1e7)
       .signAndSend(address, { signer: injector.signer }, callback)
   } catch (error) {

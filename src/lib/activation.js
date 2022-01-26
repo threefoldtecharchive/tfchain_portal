@@ -22,7 +22,7 @@ export async function getMoreFunds(substrateAccountID, api, callback) {
 
 export async function acceptTermsAndCondition (api, address, documentLink, documentHash, callback) {
   const injector = await web3FromAddress(address)
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .userAcceptTc(documentLink, documentHash)
     .signAndSend(address, { signer: injector.signer }, callback)
 }

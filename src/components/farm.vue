@@ -206,8 +206,10 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingCreateFarm = false
       })
-      .catch(() => this.loadingCreateFarm = false)
     },
     deletePublicIP (ip) {
       this.loadingDeleteIP = true
@@ -243,8 +245,10 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingDeleteIP = false
       })
-      .catch(() => this.loadingCreateFarm = false)
     },
     createPublicIP (ip, gateway) {
       this.loadingCreateIP = true
@@ -280,8 +284,10 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingCreateIP = false
       })
-      .catch(() => this.loadingCreateFarm = false)
     },
     addV2Address (address) {
       this.loadingAddV2Address = true
@@ -317,8 +323,10 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingAddV2Address = false
       })
-      .catch(() => this.loadingCreateFarm = false)
     },
     deleteNodeFarm (nodeID) {
       this.loadingNodeDelete = true
@@ -352,8 +360,10 @@ export default {
             }
           })
         }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingNodeDelete = false
       })
-      .catch(() => this.loadingCreateFarm = false)
     }
   }
 }

@@ -32,7 +32,7 @@
               <v-list-item-title>Twin</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link @click="selectedItem = 'transfer'">
+          <v-list-item v-if="twinID !== 0" link @click="selectedItem = 'transfer'">
             <v-list-item-icon>
               <v-icon>mdi-swap-horizontal</v-icon>
             </v-list-item-icon>
@@ -41,7 +41,7 @@
               <v-list-item-title>Transfer</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link @click="selectedItem = 'farms'">
+          <v-list-item v-if="twinID !== 0" link @click="selectedItem = 'farms'">
             <v-list-item-icon>
               <v-icon>mdi-barley</v-icon>
             </v-list-item-icon>
@@ -63,9 +63,22 @@
       </v-navigation-drawer>
     
       <v-container>
-        <Twin v-if="selectedItem === 'twins' && activated" />
-        <Farm v-if="selectedItem === 'farms' && activated" />
-        <Transfer :balance="balance" :getBalance="getBalance" v-if="selectedItem === 'transfer' && activated" />
+        <Twin
+          v-if="selectedItem === 'twins' && activated" 
+          :twin="twin"
+          :twinID="twinID"
+          :createTwin="createTwinFromAccount"
+          :loading="loadingCreateTwin"
+          :balance="balance"
+        />
+        <Farm
+          v-if="selectedItem === 'farms' && activated" 
+        />
+        <Transfer
+          v-if="selectedItem === 'transfer' && activated"
+          :balance="balance"
+          :getBalance="getBalance"
+        />
         <Explorer v-if="selectedItem === 'capacity' && activated" />
         <TermsAndConditions
           :open="!activated"
@@ -95,6 +108,7 @@ import Explorer from '../components/explorer.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
+import { getTwin, getTwinID, createTwin } from '../lib/twin'
 import axios from 'axios'
 import blake from 'blakejs'
 
@@ -113,6 +127,9 @@ export default {
   
   data () {
     return {
+      twinID: 0,
+      twin: undefined,
+      loadingCreateTwin: false,
       activated: true,
       selectedItem: 'twins',
       loadingActivation: false,
@@ -127,6 +144,10 @@ export default {
   async mounted () {
     if (!this.$store.state.api) return
     const api = await this.$store.state.api
+    this.twinID = await getTwinID(api, this.$route.params.accountID)
+    if (this.twinID != 0) {
+      this.twin = await getTwin(api, this.twinID)
+    } 
     this.balance = await getBalance(api, this.$route.params.accountID)
     let document = await axios.get(DOCUMENT_RAW_LINK)
     this.documentHash = blake.blake2bHex(document.data)
@@ -184,7 +205,49 @@ export default {
           this.loadingActivation = false
           console.log(err)
         })
-    }
+    },
+    createTwinFromAccount (ip) {
+      this.loadingCreateTwin = true
+      createTwin(this.$route.params.accountID, this.$store.state.api, ip, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'TwinStored') {
+              this.$toasted.show('Twin created!')
+              const twinStoredEvent = data[0]
+              getTwin(this.$store.state.api, twinStoredEvent.id)
+                .then(twin => {
+                  this.twin = twin
+                  this.twinID = twin.id
+                  this.loadingCreateTwin = false
+                  getBalance(this.$store.state.api, this.$route.params.accountID)
+                    .then(balance => {
+                      this.balance = balance / 1e7
+                    })
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Twin creation failed!')
+              this.loadingCreateTwin = false
+            }
+          })
+        }
+      })
+    },
   },
 }
 </script>

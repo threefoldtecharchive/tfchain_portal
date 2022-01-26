@@ -33,7 +33,7 @@ export async function getFarmByID (api, id) {
 export async function createFarm (address, api, name, callback) {
   const injector = await web3FromAddress(address)
 
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .createFarm(name, [])
     .signAndSend(address, { signer: injector.signer }, callback)
 }
@@ -41,7 +41,7 @@ export async function createFarm (address, api, name, callback) {
 export async function deleteIP (address, api, farmID, ip, callback) {
   const injector = await web3FromAddress(address)
 
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .removeFarmIp(farmID, ip.ip)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
@@ -49,7 +49,7 @@ export async function deleteIP (address, api, farmID, ip, callback) {
 export async function createIP (address, api, farmID, ip, gateway, callback) {
   const injector = await web3FromAddress(address)
 
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .addFarmIp(farmID, ip, gateway)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
@@ -62,14 +62,14 @@ export async function getFarmPayoutV2Address (api, id) {
 export async function setFarmPayoutV2Address (address, api, id, v2address, callback) {
   const injector = await web3FromAddress(address)
 
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .addStellarPayoutV2Address(id, v2address)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
 
 export async function acceptTermsAndConditionFarmer (api, address, documentLink, documentHash, callback) {
   const injector = await web3FromAddress(address)
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .farmerAcceptTc(documentLink, documentHash)
     .signAndSend(address, { signer: injector.signer }, callback)
 }
@@ -84,7 +84,7 @@ export async function farmerAcceptedTermsAndConditions (api, address, documentLi
 export async function deleteNode (address, api, nodeId, callback) {
   const injector = await web3FromAddress(address)
 
-  api.tx.tfgridModule
+  return api.tx.tfgridModule
     .deleteNodeFarm(nodeId)
     .signAndSend(address, { signer: injector.signer }, callback)
 }

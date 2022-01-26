@@ -24,7 +24,7 @@ export default {
 <style scoped>
 .main {
   width: 90% !important;
-  height: 100%;
+  height: 88vh !important;
   margin: auto;
 }
 .frame {

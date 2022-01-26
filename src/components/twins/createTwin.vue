@@ -1,52 +1,40 @@
 <template>
-  <div class="text-center">
-    <v-dialog
-      v-model="open"
-      width="500"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          v-bind="attrs"
-          v-on="on"
-          :loading="loading"
-          class="btn"
-          color="primary"
+  <v-card class="card">
+    <v-card-title>
+      Create a twin
+    </v-card-title>
+    <v-card-text>
+      <span>Create your digital twin, with this twin you can interact on TF Grid.</span>
+      <div class="text">
+        <v-text-field
+          label="Twin IP"
+          v-model="twinIP"
+          required
+          outlined
+          hint="If you have Yggdrasil installed, please provide your Yggdrasil IPV6"
+          persistent-hint
+        ></v-text-field>
+      </div>
+      <span class="infoSpan">More information on the Planetary Network: 
+        <a
+          target="blank"
+          href="https://library.threefold.me/info/manual/#/manual__yggdrasil_client"
         >
-          Create Twin
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title class="text-h5">
-          Create Twin
-        </v-card-title>
-
-        <v-card-text>
-          <div class="text">
-            <v-text-field
-              label="Twin IP"
-              v-model="twinIP"
-              required
-              outlined
-            ></v-text-field>
-          </div>
-        </v-card-text>
-
-        <v-divider></v-divider>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            color="primary"
-            text
-            @click="createTwin()"
-          >
-            Create
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </div>
+          Click here
+        </a>
+      </span>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn
+        text
+        @click="createTwin()"
+        :loading="loading"
+      >
+        Create
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 <script>
 import { mapState } from 'vuex'
@@ -81,6 +69,16 @@ export default {
   margin-top: 2em !important;
 }
 .v-card {
-  background: #252c48 !important;
+  /* background: linear-gradient(90deg, rgb(63, 63, 65) 35%, rgba(109,85,230,1) 100%); */
+  background: rgba(109,85,230,1);
+  margin: auto;
+  margin-top: 1em;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.v-card a {
+  color: white;
 }
 </style>

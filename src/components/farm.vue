@@ -143,6 +143,7 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    console.log(this.nodes)
     this.loadingNodes = false
   },
 

@@ -56,5 +56,11 @@ export async function getNodesUptime (nodeId) {
 export async function getNodeUsedResources (nodeId) {
   const res = await axios.get(`${config.gridproxyUrl}nodes/${nodeId}`, { timeout: 1000 })
 
-  return res.data.capacity.used
+  if (res.status === 200) {
+    if (res.data == 'likely down') {
+      throw Error('likely down')
+    } else {
+      return res.data.capacity.used_resources
+    }
+  }
 }

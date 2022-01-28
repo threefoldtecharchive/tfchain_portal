@@ -104,18 +104,20 @@
                   <template v-slot:activator="{ on }">
                     <v-progress-circular v-on="on" :rotate="-90" :size="100" :width="15" :value="getPercentage(key)"
                       color="light-green darken-2" />
-                    <span v-if="key !== 'cru'">
-                      {{ item.usedResources[key] | toTerraOrGiga }} / {{ item.resources[key] | toTerraOrGiga }}
-                    </span>
-                    <span v-else>
-                      {{ item.usedResources[key] }} / {{ item.resources[key] }}
-                    </span>
+                    <template v-if="item.usedResources">
+                      <span v-if="key !== 'cru'">
+                        {{ item.usedResources[key] | toTerraOrGiga }} / {{ item.resources[key] | toTerraOrGiga }}
+                      </span>
+                      <span v-else>
+                        {{ item.usedResources[key] }} / {{ item.resources[key] }}
+                      </span>
+                    </template>
                   </template>
                   <span>
                     <v-row dense>
                       Total: {{ item.resources[key] }}
                     </v-row>
-                    <v-row dense>
+                    <v-row dense v-if="item.usedResources">
                       Reserved: {{ item.usedResources[key] }}
                     </v-row>
                     <v-row v-if="key === 'sru' || key === 'hru'" dense>
@@ -199,6 +201,7 @@ export default {
   },
   methods: {
     getPercentage (type) {
+      if (!this.expanded[0].usedResources) return 0
       const reservedResources = this.expanded[0].usedResources[type]
       const totalResources = this.expanded[0].resources[type]
       if (reservedResources === 0 && totalResources === 0) return 0

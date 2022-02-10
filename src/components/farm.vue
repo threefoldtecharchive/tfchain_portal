@@ -104,6 +104,8 @@
       :nodes="nodes"
       :deleteNode="deleteNodeFarm" 
       :loadingDelete="loadingNodeDelete"
+      :addNodePublicConfig="addNodePublicConfig"
+      :loadingAddNodePublicConfig="loadingAddNodePublicConfig"
     />
   </div>
 </template>
@@ -119,7 +121,7 @@ import {
   deleteNode
 } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
-import { getNodesByFarmID } from '../lib/nodes'
+import { getNodesByFarmID, addNodePublicConfig } from '../lib/nodes'
 import { hex2a } from '../lib/util'
 import CreateFarm from './farms/createFarm.vue'
 import PublicIPTable from './farms/publicIpTable.vue'
@@ -143,7 +145,6 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
-    console.log(this.nodes)
     this.loadingNodes = false
   },
 
@@ -158,6 +159,7 @@ export default {
       loadingAddV2Address: false,
       loadingNodeDelete: false,
       loadingNodes: true,
+      loadingAddNodePublicConfig: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -364,6 +366,43 @@ export default {
       }).catch(err => {
         this.$toasted.show(err.message)
         this.loadingNodeDelete = false
+      })
+    },
+    addNodePublicConfig (node, config) {
+      this.loadingAddNodePublicConfig = true
+      addNodePublicConfig(this.$route.params.accountID, this.$store.state.api, node.farm_id, node.id, config, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'NodeUpdated') {
+              this.$toasted.show('Node public config added!')
+              this.loadingAddNodePublicConfig = false
+              getNodesByFarmID(this.$store.state.api, this.farms)
+                .then(nodes => this.nodes = nodes)
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Adding Node public config failed')
+              this.loadingAddNodePublicConfig = false
+            }
+          })
+        }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingAddNodePublicConfig = false
       })
     }
   }

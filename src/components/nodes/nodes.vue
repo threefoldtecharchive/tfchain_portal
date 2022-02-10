@@ -154,13 +154,36 @@
           </template>
           <span>Delete a node</span>
         </v-tooltip>
+
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on, attrs }">
+            <v-icon
+              medium
+              @click="openAddPublicConfigModal(item)"
+              v-on="on"
+              v-bind="attrs"
+            >
+              mdi-earth
+            </v-icon>
+          </template>
+          <span>Add a public config</span>
+        </v-tooltip>
       </template>
+    
       <template v-slot:item.status="{ item }">
         <p class="text-left mt-1 mb-0">
           <v-chip :color="getStatus(item).color" dark>{{ getStatus(item).status }}</v-chip>
         </p>
       </template>
     </v-data-table>
+
+    <PublicConfig
+      :node="nodeToEdit"
+      :open="openAddPublicConfig"
+      :close="() => openAddPublicConfig = false"
+      :loading="loadingAddNodePublicConfig"
+      :save="addNodePublicConfig"
+    />
 
     <v-dialog v-model="dialogDelete" max-width="700px">
       <v-card>
@@ -179,16 +202,20 @@
 </template>
 <script>
 import moment from 'moment'
+import PublicConfig from './publicConfig.vue'
 
 export default {
   name: 'NodesTable',
-  props: ['loading', 'nodes', 'deleteNode', 'loadingDelete'],
+  props: ['loading', 'nodes', 'deleteNode', 'loadingDelete', 'addNodePublicConfig', 'loadingAddNodePublicConfig'],
+  components: { PublicConfig },
   data () {
     return {
       dialogDelete: false,
       editedIndex: -1,
       expanded: [],
       singleExpand: true,
+      openAddPublicConfig: false,
+      nodeToEdit: {},
       headers: [
         { text: 'Node ID', value: 'id' },
         { text: 'Farm ID', value: 'farm_id' },
@@ -235,6 +262,12 @@ export default {
 
       if (hours < 2) return { color: 'green', status: 'up' }
       else if (hours > 2 && hours < 3) { return { color: 'orange', status: 'likely down' } } else return { color: 'red', status: 'down' }
+    },
+
+    openAddPublicConfigModal (node) {
+      this.nodeToEdit = node
+      console.log(this.nodeToEdit)
+      this.openAddPublicConfig = true
     }
   },
 

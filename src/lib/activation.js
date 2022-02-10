@@ -30,6 +30,5 @@ export async function acceptTermsAndCondition (api, address, documentLink, docum
 export async function userAcceptedTermsAndConditions (api, address) {
   const tcs = await api.query.tfgridModule.usersTermsAndConditions(address)
   const parsedTcs = tcs.toJSON()
-  console.log(`signed tcs: ${parsedTcs.length}`)
   return parsedTcs.length > 0
 }

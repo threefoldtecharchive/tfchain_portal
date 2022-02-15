@@ -1,7 +1,10 @@
+import {
+  web3FromAddress,
+} from '@polkadot/extension-dapp'
 import { hex2a } from './util'
-import config from '../config'
-
 import axios from 'axios'
+
+import config from '../config'
 
 export async function getNodesByFarmID (api, farms) {
   const farmIDs = farms.map(farm => farm.id)
@@ -63,4 +66,12 @@ export async function getNodeUsedResources (nodeId) {
       return res.data.capacity.used_resources
     }
   }
+}
+
+export async function addNodePublicConfig (address, api, nodeID, farmID, config, callback) {
+  const injector = await web3FromAddress(address)
+
+  return api.tx.tfgridModule
+    .addNodePublicConfig(farmID, nodeID, config)
+    .signAndSend(address, { signer: injector.signer }, callback)
 }

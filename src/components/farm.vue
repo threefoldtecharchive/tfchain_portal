@@ -104,6 +104,7 @@
       :nodes="nodes"
       :deleteNode="deleteNodeFarm" 
       :loadingDelete="loadingNodeDelete"
+      :getNodes="getNodes"
     />
   </div>
 </template>
@@ -143,7 +144,6 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
-    console.log(this.nodes)
     this.loadingNodes = false
   },
 
@@ -158,6 +158,7 @@ export default {
       loadingAddV2Address: false,
       loadingNodeDelete: false,
       loadingNodes: true,
+      loadingAddNodePublicConfig: false,
       expanded: [],
       singleExpand: true,
       headers: [
@@ -170,6 +171,9 @@ export default {
     }
   },
   methods: {
+    async getNodes () {
+      this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    },
     decodeHex (input) {
       return hex2a(input)
     },
@@ -365,7 +369,7 @@ export default {
         this.$toasted.show(err.message)
         this.loadingNodeDelete = false
       })
-    }
+    },
   }
 }
 </script>

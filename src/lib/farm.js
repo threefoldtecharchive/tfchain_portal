@@ -1,6 +1,6 @@
 import {
   web3FromAddress,
-} from '@polkadot/extension-dapp';
+} from '@polkadot/extension-dapp'
 import { hex2a } from './util'
 
 export async function getFarm (api, twinID) {

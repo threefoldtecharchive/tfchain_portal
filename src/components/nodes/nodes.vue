@@ -158,6 +158,7 @@
         <v-tooltip bottom>
           <template v-slot:activator="{ on, attrs }">
             <v-icon
+              class="configIcon"
               medium
               @click="openAddPublicConfigModal(item)"
               v-on="on"
@@ -288,5 +289,8 @@ export default {
 }
 .link {
   color: white !important;
+}
+.configIcon {
+  margin-left: 0.5em;
 }
 </style>

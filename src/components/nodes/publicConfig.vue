@@ -1,7 +1,7 @@
 <template>
   <div class="text-center">
     <v-dialog
-      v-model="open"
+      v-model="openModal"
       width="800"
       v-on:click:outside="close"
     >
@@ -13,7 +13,7 @@
         <v-card-text class="text">
           <v-text-field
             label="IPV4"
-            :value="ip4"
+            v-model="ip4"
             required
             outlined
             dense
@@ -21,14 +21,14 @@
             persistent-hint
             :error-messages="ipErrorMessage"
             :rules="[
-              () => !!ip || 'This field is required',
+              () => !!ip4 || 'This field is required',
               ipcheck
             ]"
           ></v-text-field>
 
           <v-text-field
             label="Gateway"
-            :value="gw4"
+            v-model="gw4"
             required
             outlined
             dense
@@ -36,7 +36,7 @@
             persistent-hint
             :error-messages="gatewayErrorMessage"
             :rules="[
-              () => !!gateway || 'This field is required',
+              () => !!gw4 || 'This field is required',
               gatewayCheck
             ]"
           ></v-text-field>
@@ -45,7 +45,7 @@
 
           <v-text-field
             label="IPV6"
-            :value="ip6"
+            v-model="ip6"
             outlined
             dense
             hint="IPV6 address (not required)"
@@ -58,7 +58,7 @@
 
           <v-text-field
             label="Gateway IPV6"
-            :value="gw6"
+            v-model="gw6"
             outlined
             dense
             hint="Gateway for the IP in ipv6 format (not required)"
@@ -71,7 +71,7 @@
 
           <v-text-field
             label="Domain"
-            :value="domain"
+            v-model="domain"
             outlined
             dense
             hint="Domain for webgateway (not required)"
@@ -88,16 +88,15 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            color="secondary"
             text
-            @click="open = false"
+            @click="close"
           >
             Cancel
           </v-btn>
           <v-btn
-            color="primary"
             text
-            @click="createPublicIP()"
+            @click="save()"
+            :loading="loading"
           >
             Save
           </v-btn>
@@ -108,9 +107,11 @@
 </template>
 <script>
 import { hex2a } from '../../lib/util'
+import { addNodePublicConfig } from '../../lib/nodes'
+
 export default {
   name: 'publicConfig',
-  props: ['open', 'close', 'node', 'loading', 'save'],
+  props: ['open', 'close', 'node', 'getNodes'],
 
   data () {
     return {
@@ -118,28 +119,27 @@ export default {
       ip6ErrorMessage: '',
       gatewayErrorMessage: '',
       gateway6ErrorMessage: '',
-      domainErrorMessage: ''
+      domainErrorMessage: '',
+      loading: false,
+      id: '',
+      ip4: '',
+      gw4: '',
+      ip6: '',
+      gw6: '',
+      domain: ''
     }
   },
 
   computed: {
-    id() {
-      return this.node.id || 0
-    },
-    ip4 () {
-      return this.node.public_config ? hex2a(this.node.public_config.ipv4) : ''
-    },
-    gw4 () {
-      return this.node.public_config ? hex2a(this.node.public_config.gw4) : ''
-    },
-    ip6 () {
-      return this.node.public_config ? hex2a(this.node.public_config.ipv6) : ''
-    },
-    gw6 () {
-      return this.node.public_config ? hex2a(this.node.public_config.gw6) : ''
-    },
-    domain () {
-      return this.node.public_config ? hex2a(this.node.public_config.domain) : ''
+    openModal: {
+      get () {
+        console.log(`wachting open`)
+        this.getNodeConfig()
+        return this.open
+      },
+      set () {
+        this.close()
+      }
     }
   },
 
@@ -208,6 +208,61 @@ export default {
     },
     domainCheck () {
       if (this.domain === '') return true
+    },
+    getNodeConfig () {
+      this.id = this.node.id
+      if (this.node.public_config) {
+        this.ip4 = this.node.public_config.ipv4 != '0x' ? hex2a(this.node.public_config.ipv4) : ''
+        this.gw4 = this.node.public_config.gw4 != '0x' ? hex2a(this.node.public_config.gw4) : ''
+        this.ip6 = this.node.public_config.ipv6 != '0x' ? hex2a(this.node.public_config.ipv6) : ''
+        this.gw6 = this.node.public_config.gw6 != '0x' ? hex2a(this.node.public_config.gw6) : ''
+        this.domain = this.node.public_config.domain != '0x' ? hex2a(this.node.public_config.domain) : ''
+      }
+    },
+    save () {
+      const config = {
+        ipv4: this.ip4,
+        gw4: this.gw4,
+        ipv6: this.ip6,
+        gw6: this.gw6,
+        domain: this.domain
+      }
+
+      this.loading = true
+      addNodePublicConfig(this.$route.params.accountID, this.$store.state.api, this.node.farm_id, this.node.id, config, (res) => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'tfgridModule' && method === 'NodePublicConfigStored') {
+              this.$toasted.show('Node public config added!')
+              this.loading = false
+              this.close()
+              this.getNodes()
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Adding Node public config failed')
+              this.loading = false
+            }
+          })
+        }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loading = false
+      })
     }
   }
 }

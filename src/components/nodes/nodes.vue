@@ -181,8 +181,7 @@
       :node="nodeToEdit"
       :open="openAddPublicConfig"
       :close="() => openAddPublicConfig = false"
-      :loading="loadingAddNodePublicConfig"
-      :save="addNodePublicConfig"
+      :getNodes="getNodes"
     />
 
     <v-dialog v-model="dialogDelete" max-width="700px">
@@ -206,7 +205,7 @@ import PublicConfig from './publicConfig.vue'
 
 export default {
   name: 'NodesTable',
-  props: ['loading', 'nodes', 'deleteNode', 'loadingDelete', 'addNodePublicConfig', 'loadingAddNodePublicConfig'],
+  props: ['loading', 'nodes', 'deleteNode', 'loadingDelete', 'getNodes'],
   components: { PublicConfig },
   data () {
     return {
@@ -266,7 +265,6 @@ export default {
 
     openAddPublicConfigModal (node) {
       this.nodeToEdit = node
-      console.log(this.nodeToEdit)
       this.openAddPublicConfig = true
     }
   },

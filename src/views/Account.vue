@@ -50,6 +50,15 @@
               <v-list-item-title>Farms</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+          <v-list-item v-if="twinID !== 0" link @click="selectedItem = 'validators'">
+            <v-list-item-icon>
+              <v-icon>mdi-check-all</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Validator</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
           <v-list-item link @click="selectedItem = 'capacity'">
             <v-list-item-icon>
               <v-icon>mdi-earth</v-icon>
@@ -86,6 +95,7 @@
           :documentLink="documentLink"
           :loading="loadingActivation"
         />
+        <Validators v-if="selectedItem === 'validators' && activated"/>
       </v-container>
     </div>
 
@@ -106,6 +116,8 @@ import Twin from '../components/twin.vue'
 import Transfer from '../components/transfer.vue'
 import Explorer from '../components/explorer.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
+import Validators from '../components/validators.vue'
+
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
 import { getTwin, getTwinID, createTwin } from '../lib/twin'
@@ -122,7 +134,8 @@ export default {
     Twin,
     TermsAndConditions,
     Transfer,
-    Explorer
+    Explorer,
+    Validators
   },
   
   data () {

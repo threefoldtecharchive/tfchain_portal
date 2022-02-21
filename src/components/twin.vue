@@ -5,6 +5,15 @@
       <div class="balance">
         <h2>{{balance.toFixed(2)}} TFT</h2>
         <h3 v-if="network !== 'dev'">$ {{balanceInUSD.toFixed(2)}}</h3>
+        <v-btn
+          v-if="network === 'dev' && balance < 100"
+          color="primary"
+          text
+          @click="getMoreTft"
+          :loading="loadingGetMoreTft"
+        >
+          get more TFT
+        </v-btn>
       </div>
     </v-row>
 

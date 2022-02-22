@@ -21,9 +21,11 @@
 
             <v-divider/>
 
+            <div class="spanContainer">
+              <h3>Or use Threefold connect to scan this qr code</h3>
+            </div>
             <div class="qr">
-              <span>Or use Threefold connect to scan this qr code</span>
-              <qrcode-vue :value="qrCodeText" :size="400" level="H" />
+              <qrcode-vue :value="qrCodeText" :size="400" level="M" render-as="svg" />
             </div>
 
             <v-alert
@@ -86,15 +88,17 @@ export default {
 .button {
   width: 100% !important;
 }
+.spanContainer {
+  margin-top: 1em;
+  text-align: center;
+}
 .qr {
-  margin-top: 1em !important;
   margin-bottom: 1em !important;
   text-align: center;
   margin: auto;
-}
-.qr span {
-  margin-top: 1em !important;
-  margin-bottom: 1em !important;
+  width: 450px;
+  padding: 1em;
+  height: 100%;
 }
 .card {
   background: #252c48 !important;

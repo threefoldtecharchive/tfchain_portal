@@ -102,6 +102,7 @@ import Withdraw from './bridge/withdraw.vue'
 import { getTwin, updateTwin } from '../lib/twin'
 import { getBalance } from '../lib/balance'
 import { withdraw, getDepositFee, getWithdrawFee } from '../lib/bridge'
+import { getMoreFunds } from '../lib/activation'
 import { hex2a } from '../lib/util'
 import config from '../config'
 import axios from 'axios'
@@ -143,6 +144,7 @@ export default {
       openWithdraw: false,
       openEditTwin: false,
       loadingEditTwin: false,
+      loadingGetMoreTft: false,
     }
   },
 
@@ -243,6 +245,45 @@ export default {
         this.openWithdraw = false
       })
     },
+    getMoreTft() {
+      this.loadingGetMoreTft = true
+      getMoreFunds(this.$route.params.accountID, this.$store.state.api, res => {
+        console.log(res)
+        if (res instanceof Error) {
+          console.log(res)
+          return
+        }
+
+        const { events = [], status } = res
+        console.log(`Current status is ${status.type}`)
+        switch (status.type) {
+          case 'Ready': this.$toasted.show(`Transaction submitted`)
+        }
+      
+        if (status.isFinalized) {
+          console.log(`Transaction included at blockHash ${status.asFinalized}`)
+      
+          // Loop through Vec<EventRecord> to display all events
+          events.forEach(({ phase, event: { data, method, section } }) => {
+            console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
+            if (section === 'balances' && method === 'Transfer') {
+              this.$toasted.show('Success!')
+              this.loadingGetMoreTft = false
+              getBalance(this.$store.state.api, this.$route.params.accountID)
+                .then(balance => {
+                  this.balance = balance / 1e7
+                })
+            } else if (section === 'system' && method === 'ExtrinsicFailed') {
+              this.$toasted.show('Get more TFT failed!')
+              this.loadingGetMoreTft = false
+            }
+          })
+        }
+      }).catch(err => {
+        this.$toasted.show(err.message)
+        this.loadingGetMoreTft = false
+      })
+    }
   }
 }
 </script>

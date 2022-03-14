@@ -206,7 +206,7 @@ export default {
                   this.loadingCreateFarm = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Farm creation faild!')
+              this.$toasted.show('Farm creation failed!')
               this.loadingCreateFarm = false
             }
           })
@@ -245,7 +245,7 @@ export default {
                   this.loadingDeleteIP = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Farm creation faild!')
+              this.$toasted.show('IP deletion failed!')
               this.loadingDeleteIP = false
             }
           })
@@ -284,7 +284,7 @@ export default {
                   this.loadingCreateIP = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Farm creation faild!')
+              this.$toasted.show('Adding an IP failed!')
               this.loadingCreateIP = false
             }
           })
@@ -323,7 +323,7 @@ export default {
                   this.loadingAddV2Address = false
                 })
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
-              this.$toasted.show('Farm creation faild!')
+              this.$toasted.show('Adding a V2 address failed!')
               this.loadingAddV2Address = false
             }
           })

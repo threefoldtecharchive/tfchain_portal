@@ -91,6 +91,7 @@ export default {
 .spanContainer {
   margin-top: 1em;
   text-align: center;
+  margin-bottom: 1em;
 }
 .qr {
   margin-bottom: 1em !important;
@@ -99,6 +100,7 @@ export default {
   width: 450px;
   padding: 1em;
   height: 100%;
+  background: white;
 }
 .card {
   background: #252c48 !important;

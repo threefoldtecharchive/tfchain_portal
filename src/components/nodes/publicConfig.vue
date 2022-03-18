@@ -20,6 +20,7 @@
             hint="IPV4 address in CIDR format xx.xx.xx.xx/xx"
             persistent-hint
             :error-messages="ipErrorMessage"
+            :validate-on-blur="true"
             :rules="[
               () => !!ip4 || 'This field is required',
               ipcheck
@@ -34,6 +35,7 @@
             dense
             hint="Gateway for the IP in ipv4 format"
             persistent-hint
+            :validate-on-blur="true"
             :error-messages="gatewayErrorMessage"
             :rules="[
               () => !!gw4 || 'This field is required',
@@ -50,6 +52,7 @@
             dense
             hint="IPV6 address (not required)"
             persistent-hint
+            :validate-on-blur="true"
             :error-messages="ip6ErrorMessage"
             :rules="[
               ip6check
@@ -63,6 +66,7 @@
             dense
             hint="Gateway for the IP in ipv6 format (not required)"
             persistent-hint
+            :validate-on-blur="true"
             :error-messages="gateway6ErrorMessage"
             :rules="[
               gateway6Check
@@ -76,6 +80,7 @@
             dense
             hint="Domain for webgateway (not required)"
             persistent-hint
+            :validate-on-blur="true"
             :error-messages="domainErrorMessage"
             :rules="[
               domainCheck
@@ -210,6 +215,7 @@ export default {
       if (this.domain === '') return true
     },
     getNodeConfig () {
+      console.log(this.node.public_config)
       this.id = this.node.id
       if (this.node.public_config) {
         this.ip4 = this.node.public_config.ipv4 != '0x' ? hex2a(this.node.public_config.ipv4) : ''
@@ -217,6 +223,12 @@ export default {
         this.ip6 = this.node.public_config.ipv6 != '0x' ? hex2a(this.node.public_config.ipv6) : ''
         this.gw6 = this.node.public_config.gw6 != '0x' ? hex2a(this.node.public_config.gw6) : ''
         this.domain = this.node.public_config.domain != '0x' ? hex2a(this.node.public_config.domain) : ''
+      } else {
+        this.ip4 = ''
+        this.gw4 = ''
+        this.ip6 = ''
+        this.gw6 = ''
+        this.domain = ''
       }
     },
     save () {

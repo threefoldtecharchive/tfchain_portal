@@ -28,6 +28,11 @@
               v-model="name"
               required
               outlined
+              :error-messages="farmNameErrorMessage"
+              :rules="[
+                () => !!name || 'This field is required',
+                nameCheck
+              ]"
             ></v-text-field>
           </div>
         </v-card-text>
@@ -37,6 +42,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            :disabled="!!farmNameErrorMessage"
             color="primary"
             text
             @click="createFarm()"
@@ -62,6 +68,7 @@ export default {
     return {
       open: false,
       name: '',
+      farmNameErrorMessage: '',
     }
   },
   methods: {
@@ -69,7 +76,17 @@ export default {
       this.open = false
       console.log(this.name)
       this.create(this.name)
-    }
+    },
+    nameCheck () {
+      const nameRegex = new RegExp('^[a-zA-Z0-9_-]*$')
+      if (nameRegex.test(this.name)) {
+        this.farmNameErrorMessage = ''
+        return true
+      } else {
+        this.farmNameErrorMessage = 'Name is not formatted correctly (All letters + numbers and (-,_) are allowed'
+        return false
+      }
+    },
   }
 };
 </script>

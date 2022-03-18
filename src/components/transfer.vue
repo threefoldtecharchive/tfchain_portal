@@ -1,64 +1,87 @@
 <template>
   <div>
-    <v-card class="card">
-      <v-card-title class="text-h5">
-        Transfer TFT
-      </v-card-title>
+    <div class="container"> 
+      <v-card class="card">
+        <v-card-title class="text-h5">
+          Transfer TFT
+        </v-card-title>
 
-      <v-card-text>
-        <span class="text-muted">Transfer TFT from your account to another account on TF Chain</span>
-        <v-text-field
-          label="Recipient address"
-          v-model="target"
-          :error-messages="errorMessages"
-          :rules="[
-            () => !!target || 'This field is required',
-            isValidAddress()
-          ]"
-        ></v-text-field>
-        <v-text-field
-          label="Amount"
-          v-model="amount"
-          type="number"
-          :rules="[
-            () => !!amount || 'This field is required',
-            () => !!amount && amount * 1e7 < this.balance || 'Amount cannot exceed balance',
-          ]"
-        ></v-text-field>
-        <span>Available balance: {{(balance/1e7).toFixed(4)}} TFT</span>
-      </v-card-text>
+        <v-card-text>
+          <span class="text-muted">Transfer TFT from your account to another account on TF Chain</span>
+          <v-text-field
+            label="Recipient address"
+            v-model="target"
+            :error-messages="errorMessages"
+            :rules="[
+              () => !!target || 'This field is required',
+              isValidAddress()
+            ]"
+          ></v-text-field>
+          <v-text-field
+            label="Amount"
+            v-model="amount"
+            type="number"
+            :rules="[
+              () => !!amount || 'This field is required',
+              () => !!amount && amount * 1e7 < this.balance || 'Amount cannot exceed balance',
+            ]"
+          ></v-text-field>
+          <span>Available balance: {{(balance/1e7).toFixed(4)}} TFT</span>
+        </v-card-text>
 
-      <v-divider></v-divider>
+        <v-divider></v-divider>
 
-      <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn
-          text
-          @click="transferFrom()"
-          :loading="loadingTransfer"
-        >
-          Transfer
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            text
+            @click="transferFrom()"
+            :loading="loadingTransfer"
+          >
+            Transfer
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </div>
+    <div class="container">
+      <h2>Transactions overview</h2>
+      <TransactionTable :transfers="transfers" :loading="loadingTransactions"/>
+    </div>
   </div>
 </template>
 <script>
+import { getTransactionHistoryFrom, getTransactionHistoryTo } from '../lib/balance'
 import { transfer, checkAddress } from '../lib/transfer'
+import TransactionTable from './transactions/transactionsTable.vue'
+
 export default {
+  components: {
+    TransactionTable
+  },
   props: ['balance', 'getBalance'],
+  async mounted () {
+    const [fromHistory, toHistory] = await Promise.all([
+      getTransactionHistoryFrom(this.$route.params.accountID),
+      getTransactionHistoryTo(this.$route.params.accountID)
+    ])
+    const transfers = [].concat(fromHistory, toHistory)
+    transfers.sort((a, b) => b.timestamp - a.timestamp)
+    this.transfers = transfers
+    this.loadingTransactions = false
+  },
   data () {
     return {
       target: '',
       amount: 0,
       loadingTransfer: false,
       errorMessages: '',
+      transfers: [],
+      loadingTransactions: true
     }
   },
   methods: {
     isValidAddress () {
       const isValid = checkAddress(this.target)
-      console.log(isValid)
       if (isValid === true) {
         console.log('addr is valid')
         this.errorMessages = ''
@@ -111,9 +134,11 @@ export default {
 </script>
 <style scoped>
 .card {
-  width: 90%;
+  background: #252c48 !important;
+}
+.container {
+  padding: 1em;
   margin: auto;
   margin-top: 1em;
-  background: #252c48 !important;
 }
 </style>

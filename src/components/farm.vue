@@ -144,11 +144,19 @@ export default {
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
     this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    this.interval = setInterval(async () => {
+      this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    }, 60000)
     this.loadingNodes = false
+  },
+
+  destroyed () {
+    clearInterval(this.interval) 
   },
 
   data () {
     return {
+      interval: undefined,
       farms: [],
       nodes: [],
       twinID: 0,

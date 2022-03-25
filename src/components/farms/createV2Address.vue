@@ -39,6 +39,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            :disabled="!!errorMessages"
             color="primary"
             text
             @click="addAddress()"

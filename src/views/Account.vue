@@ -50,7 +50,7 @@
               <v-list-item-title>Farms</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
-          <v-list-item link @click="selectedItem = 'capacity'">
+          <v-list-item link @click="openExplorer">
             <v-list-item-icon>
               <v-icon>mdi-earth</v-icon>
             </v-list-item-icon>
@@ -79,7 +79,6 @@
           :balance="balance"
           :getBalance="getBalance"
         />
-        <Explorer v-if="selectedItem === 'capacity' && activated" />
         <TermsAndConditions
           :open="!activated"
           :accept="acceptTermsAndConditions"
@@ -104,13 +103,13 @@ import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
 import Transfer from '../components/transfer.vue'
-import Explorer from '../components/explorer.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
 import { getTwin, getTwinID, createTwin } from '../lib/twin'
 import axios from 'axios'
 import blake from 'blakejs'
+import config from '../config'
 
 const DOCUMENT_RAW_LINK = 'https://library.threefold.me/info/legal/tfgrid/terms_conditions_tfgrid3'
 
@@ -121,8 +120,7 @@ export default {
     Farm,
     Twin,
     TermsAndConditions,
-    Transfer,
-    Explorer
+    Transfer
   },
   
   data () {
@@ -248,6 +246,9 @@ export default {
         }
       })
     },
+    openExplorer () {
+      window.open(config.explorerUrl, '_blank')
+    }
   },
 }
 </script>

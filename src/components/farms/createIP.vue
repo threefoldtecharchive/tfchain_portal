@@ -68,6 +68,7 @@
             color="primary"
             text
             @click="createPublicIP()"
+            :disabled="!!ipErrorMessage || !!gatewayErrorMessage || ip === '' || gateway === ''"
           >
             Save
           </v-btn>
@@ -101,6 +102,11 @@ export default {
       return hex2a(input)
     },
     ipcheck () {
+      if (this.ip === '') {
+        this.ipErrorMessage = ''
+        return true
+      }
+
       const ipRegex = new RegExp('^([0-9]{1,3}.){3}[0-9]{1,3}(/([0-9]|[1-2][0-9]|3[0-2]))$')
       if (ipRegex.test(this.ip)) {
         this.ipErrorMessage = ''
@@ -111,6 +117,11 @@ export default {
       }
     },
     gatewayCheck () {
+      if (this.gateway === '') {
+        this.ipErrorMessage = ''
+        return true
+      }
+
       const gatewayRegex = new RegExp('^(?:[0-9]{1,3}.){3}[0-9]{1,3}$')
       if (gatewayRegex.test(this.gateway)) {
         this.gatewayErrorMessage = ''

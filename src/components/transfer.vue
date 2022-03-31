@@ -36,6 +36,7 @@
           text
           @click="transferFrom()"
           :loading="loadingTransfer"
+          :disabled="!!errorMessages || amount === 0 || target === ''"
         >
           Transfer
         </v-btn>

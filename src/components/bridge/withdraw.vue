@@ -45,6 +45,7 @@
             text
             @click="submitWithdraw()"
             :loading="loading"
+            :disabled="!!errorMessages || target === ''"
           >
             Submit withdraw
           </v-btn>

@@ -42,7 +42,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            :disabled="!!farmNameErrorMessage"
+            :disabled="!!farmNameErrorMessage || name === ''"
             color="primary"
             text
             @click="createFarm()"

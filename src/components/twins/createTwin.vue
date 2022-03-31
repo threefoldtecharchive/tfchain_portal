@@ -13,6 +13,11 @@
           outlined
           hint="If you have Yggdrasil installed, please provide your Yggdrasil IPV6"
           persistent-hint
+          :error-messages="ipErrorMessage"
+          :rules="[
+            () => !!twinIP || 'This field is required',
+            ipCheck
+          ]"
         ></v-text-field>
       </div>
       <span class="infoSpan">More information on the Planetary Network: 
@@ -30,6 +35,7 @@
         text
         @click="createTwin()"
         :loading="loading"
+        :disabled="!!ipErrorMessage"
       >
         Create
       </v-btn>
@@ -49,7 +55,8 @@ export default {
   data: () => {
     return {
       open: false,
-      twinIP: '127.0.0.1',
+      twinIP: '::1',
+      ipErrorMessage: ''
     }
   },
   methods: {
@@ -57,6 +64,18 @@ export default {
       this.open = false
       console.log(this.twinIP)
       this.create(this.twinIP)
+    },
+    ipCheck () {
+      const ip6Regex = new RegExp('(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]).){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))[0-9]{1,3}$')
+
+      console.log(ip6Regex.test(this.twinIP))
+      if (ip6Regex.test(this.twinIP)) {
+        this.ipErrorMessage = ''
+        return true
+      } else {
+        this.ipErrorMessage = 'IP address is not formatted correctly'
+        return false
+      }
     }
   }
 };

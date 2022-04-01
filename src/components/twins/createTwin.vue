@@ -33,6 +33,12 @@
       <v-spacer></v-spacer>
       <v-btn
         text
+        @click="open = false"
+      >
+        Cancel
+      </v-btn>
+      <v-btn
+        text
         @click="createTwin()"
         :loading="loading"
         :disabled="!!ipErrorMessage"

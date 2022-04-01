@@ -42,6 +42,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            text
+            @click="open = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
             :disabled="!!farmNameErrorMessage || name === ''"
             color="primary"
             text

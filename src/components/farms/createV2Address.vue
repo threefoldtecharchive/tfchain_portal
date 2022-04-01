@@ -39,6 +39,12 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            text
+            @click="open = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
             :disabled="!!errorMessages"
             color="primary"
             text

@@ -107,6 +107,7 @@
           </v-btn>
           <v-btn
             text
+            color="primary"
             @click="saveConfig()"
             :loading="loading"
           >

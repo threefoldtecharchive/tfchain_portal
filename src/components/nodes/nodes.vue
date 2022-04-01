@@ -6,11 +6,11 @@
       :items="nodes"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
-      item-key="id"
+      item-key="nodeId"
       show-expand
       class="elevation-1"
       dark
-      sort-by="id"
+      sort-by="nodeId"
       :loading="loading"
     >
       <template v-slot:top>
@@ -19,37 +19,37 @@
         </v-toolbar>
       </template>
       <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length" key="item.id">
+        <td :colspan="headers.length" key="item.nodeId">
           <v-col>
             <v-container fluid>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Node ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.id }}</span>
+                  <span>{{ item.nodeId }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Farm ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.farm_id }}</span>
+                  <span>{{ item.farmId }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Twin ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.twin_id }}</span>
+                  <span>{{ item.twinId }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Certification Type</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.certification_type }}</span>
+                  <span>{{ item.certificationType }}</span>
                 </v-flex>
               </v-row>
               <v-row>
-                <v-flex xs3 class="text-left pr-2">Created</v-flex>
+                <v-flex xs3 class="text-left pr-2">First boot at</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ new Date(item.created * 1000) }}</span>
+                  <span>{{ item.createdAt }}</span>
                 </v-flex>
               </v-row>
               <v-row>
@@ -79,7 +79,7 @@
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Farming Policy ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.farming_policy_id }}</span>
+                  <span>{{ item.farmingPolicyId }}</span>
                 </v-flex>
               </v-row>
 
@@ -135,7 +135,7 @@
 
         </td>
       </template>
-      <template v-slot:item.actions="{ item }">
+      <template v-slot:[`item.actions`]="{ item }">
         <v-progress-circular
           v-if="loadingDelete"
           indeterminate
@@ -171,7 +171,7 @@
         </v-tooltip>
       </template>
     
-      <template v-slot:item.status="{ item }">
+      <template v-slot:[`item.status`]="{ item }">
         <p class="text-left mt-1 mb-0">
           <v-chip :color="getStatus(item).color" dark>{{ getStatus(item).status }}</v-chip>
         </p>
@@ -217,8 +217,8 @@ export default {
       openAddPublicConfig: false,
       nodeToEdit: {},
       headers: [
-        { text: 'Node ID', value: 'id' },
-        { text: 'Farm ID', value: 'farm_id' },
+        { text: 'Node ID', value: 'nodeId' },
+        { text: 'Farm ID', value: 'farmId' },
         { text: 'Country', value: 'country' },
         { text: 'City', value: 'city' },
         { text: 'Status', value: 'status' },

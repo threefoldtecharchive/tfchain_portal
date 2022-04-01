@@ -143,7 +143,7 @@ export default {
     this.$store.dispatch('getAPI')
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
-    this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+    await this.getNodes()
     this.interval = setInterval(async () => {
       this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
     }, 60000)
@@ -180,7 +180,9 @@ export default {
   },
   methods: {
     async getNodes () {
+      console.log('getting nodes again')
       this.nodes = await getNodesByFarmID(this.$store.state.api, this.farms)
+      console.log(this.nodes)
     },
     decodeHex (input) {
       return hex2a(input)

@@ -91,6 +91,13 @@
         <v-divider></v-divider>
 
         <v-card-actions>
+          <v-btn
+            text
+            @click="remove()"
+            color="error"
+          >
+            Remove config
+          </v-btn>
           <v-spacer></v-spacer>
           <v-btn
             text
@@ -100,7 +107,7 @@
           </v-btn>
           <v-btn
             text
-            @click="save()"
+            @click="saveConfig()"
             :loading="loading"
           >
             Save
@@ -138,7 +145,6 @@ export default {
   computed: {
     openModal: {
       get () {
-        console.log(`wachting open`)
         this.getNodeConfig()
         return this.open
       },
@@ -149,16 +155,25 @@ export default {
   },
 
   methods: {
-    createPublicIP() {
-      this.open = false
+    saveConfig () {
       const config = {
         ipv4: this.ip4,
-        ipv6: this.ip6,
         gw4: this.gw4,
+        ipv6: this.ip6,
         gw6: this.gw6,
         domain: this.domain
       }
-      this.save(this.node, config)
+      this.save(config)
+    },
+    remove () {
+      const config = {
+        ipv4: '',
+        ipv6: '',
+        gw4: '',
+        gw6: '',
+        domain: ''
+      }
+      this.save(config)
     },
     decodeHex (input) {
       return hex2a(input)
@@ -215,14 +230,13 @@ export default {
       if (this.domain === '') return true
     },
     getNodeConfig () {
-      console.log(this.node.public_config)
-      this.id = this.node.id
-      if (this.node.public_config) {
-        this.ip4 = this.node.public_config.ipv4 != '0x' ? hex2a(this.node.public_config.ipv4) : ''
-        this.gw4 = this.node.public_config.gw4 != '0x' ? hex2a(this.node.public_config.gw4) : ''
-        this.ip6 = this.node.public_config.ipv6 != '0x' ? hex2a(this.node.public_config.ipv6) : ''
-        this.gw6 = this.node.public_config.gw6 != '0x' ? hex2a(this.node.public_config.gw6) : ''
-        this.domain = this.node.public_config.domain != '0x' ? hex2a(this.node.public_config.domain) : ''
+      this.id = this.node.nodeId
+      if (this.node.publicConfig) {
+        this.ip4 = this.node.publicConfig.ipv4
+        this.gw4 = this.node.publicConfig.gw4
+        this.ip6 = this.node.publicConfig.ipv6
+        this.gw6 = this.node.publicConfig.gw6
+        this.domain = this.node.publicConfig.domain
       } else {
         this.ip4 = ''
         this.gw4 = ''
@@ -231,17 +245,11 @@ export default {
         this.domain = ''
       }
     },
-    save () {
-      const config = {
-        ipv4: this.ip4,
-        gw4: this.gw4,
-        ipv6: this.ip6,
-        gw6: this.gw6,
-        domain: this.domain
-      }
-
+    save (config) {
       this.loading = true
-      addNodePublicConfig(this.$route.params.accountID, this.$store.state.api, this.node.farm_id, this.node.id, config, (res) => {
+      console.log(this.node.nodeId)
+      console.log(this.node.farmId)
+      addNodePublicConfig(this.$route.params.accountID, this.$store.state.api, this.node.farmId, this.node.nodeId, config, (res) => {
         console.log(res)
         if (res instanceof Error) {
           console.log(res)

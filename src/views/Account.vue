@@ -50,6 +50,19 @@
               <v-list-item-title>Farms</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
+
+          <v-list-item v-if="twinID !== 0" link @click="selectedItem = 'dnodes'">
+
+            <v-list-item-icon>
+              <v-icon>mdi-resistor-nodes</v-icon>
+            </v-list-item-icon>
+
+            <v-list-item-content>
+              <v-list-item-title>Dedicated Nodes</v-list-item-title>
+            </v-list-item-content>
+
+          </v-list-item>
+
           <v-list-item link @click="openExplorer">
             <v-list-item-icon>
               <v-icon>mdi-earth</v-icon>
@@ -74,6 +87,8 @@
         <Farm
           v-if="selectedItem === 'farms' && activated" 
         />
+        <DNode v-if="selectedItem === 'dnodes' && activated" />
+
         <Transfer
           v-if="selectedItem === 'transfer' && activated"
           :balance="balance"
@@ -103,6 +118,7 @@ import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
 import Transfer from '../components/transfer.vue'
+import DNode from '../components/dNode.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
@@ -120,7 +136,8 @@ export default {
     Farm,
     Twin,
     TermsAndConditions,
-    Transfer
+    Transfer,
+    DNode,
   },
   
   data () {

@@ -9,22 +9,22 @@
   >
 
     <template v-slot:[`item.actions`]="{ item }">
-        <v-btn
-          @click="reserveNode(item.nodeID)"
-          small
-          outlined
-        >
-        Reserve
-        </v-btn>
-    </template>"
+      <DNodeBtn 
+        :nodeId = "item.nodeId"
+      />
+    </template>
+
   </v-data-table>
 </template>
 
 <script>
-import { createRentContract } from "./../../lib/dNodes";
+import DNodeBtn from "./../../components/nodes/dNodeBtn.vue";
 
 export default {
     name: "DNodesTable",
+    components: {
+        DNodeBtn
+    },
     
     data () {
         return {
@@ -38,16 +38,14 @@ export default {
         }
     },
 
-    methods: {
-        async reserveNode(nodeId) {
-            console.log(`reserve node ${nodeId}`)
-            await createRentContract(this.$store.state.api, this.$route.params.accountID, nodeId, (res) => {
-                console.log(res)
-            })
-
+    created:
+        async function() {
+          console.log("created")
+          const api = this.$store.state.api
+          const res = await api.query.tfgridModule.pricingPolicies(0)
+          console.log(res.toJSON())
         }
     }
-}
 
 
 </script>

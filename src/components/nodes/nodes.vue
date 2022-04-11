@@ -6,11 +6,11 @@
       :items="nodes"
       :single-expand="singleExpand"
       :expanded.sync="expanded"
-      item-key="nodeId"
+      item-key="nodeID"
       show-expand
       class="elevation-1"
       dark
-      sort-by="nodeId"
+      sort-by="nodeID"
       :loading="loading"
     >
       <template v-slot:top>
@@ -19,25 +19,25 @@
         </v-toolbar>
       </template>
       <template v-slot:expanded-item="{ headers, item }">
-        <td :colspan="headers.length" key="item.nodeId">
+        <td :colspan="headers.length" key="item.nodeID">
           <v-col>
             <v-container fluid>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Node ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.nodeId }}</span>
+                  <span>{{ item.nodeID }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Farm ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.farmId }}</span>
+                  <span>{{ item.farmID }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Twin ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.twinId }}</span>
+                  <span>{{ item.twinID }}</span>
                 </v-flex>
               </v-row>
               <v-row>
@@ -49,7 +49,7 @@
               <v-row>
                 <v-flex xs3 class="text-left pr-2">First boot at</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.createdAt }}</span>
+                  <span>{{ new Date(parseInt(item.createdAt)) }}</span>
                 </v-flex>
               </v-row>
               <v-row>
@@ -61,7 +61,7 @@
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Updated at</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.updatedAt }}</span>
+                  <span>{{ new Date(parseInt(item.updatedAt)) }}</span>
                 </v-flex>
               </v-row>
               <v-row>
@@ -95,7 +95,7 @@
           </div>
 
           <v-row>
-            <v-col v-for="(value, key) in item.resources" :key="key" align="center">
+            <v-col v-for="(value, key) in item.resourcesTotal" :key="key" align="center">
               <v-flex class="text-center pr-2">
                 <span class="text-uppercase">{{ key }}</span>
               </v-flex>
@@ -104,21 +104,21 @@
                   <template v-slot:activator="{ on }">
                     <v-progress-circular v-on="on" :rotate="-90" :size="100" :width="15" :value="getPercentage(key)"
                       color="light-green darken-2" />
-                    <template v-if="item.usedResources">
+                    <template v-if="item.resourcesUsed">
                       <span v-if="key !== 'cru'">
-                        {{ item.usedResources[key] | toTerraOrGiga }} / {{ item.resources[key] | toTerraOrGiga }}
+                        {{ item.resourcesUsed[key] | toTerraOrGiga }} / {{ item.resourcesTotal[key] | toTerraOrGiga }}
                       </span>
                       <span v-else>
-                        {{ item.usedResources[key] }} / {{ item.resources[key] }}
+                        {{ item.resourcesUsed[key] }} / {{ item.resourcesTotal[key] }}
                       </span>
                     </template>
                   </template>
                   <span>
                     <v-row dense>
-                      Total: {{ item.resources[key] }}
+                      Total: {{ item.resourcesTotal[key] }}
                     </v-row>
-                    <v-row dense v-if="item.usedResources">
-                      Reserved: {{ item.usedResources[key] }}
+                    <v-row dense v-if="item.resourcesUsed">
+                      Reserved: {{ item.resourcesUsed[key] }}
                     </v-row>
                     <v-row v-if="key === 'sru' || key === 'hru'" dense>
                       100 GB can be reserved for Zos cache
@@ -217,8 +217,8 @@ export default {
       openAddPublicConfig: false,
       nodeToEdit: {},
       headers: [
-        { text: 'Node ID', value: 'nodeId' },
-        { text: 'Farm ID', value: 'farmId' },
+        { text: 'Node ID', value: 'nodeID' },
+        { text: 'Farm ID', value: 'farmID' },
         { text: 'Country', value: 'country' },
         { text: 'City', value: 'city' },
         { text: 'Status', value: 'status' },
@@ -228,9 +228,9 @@ export default {
   },
   methods: {
     getPercentage (type) {
-      if (!this.expanded[0].usedResources) return 0
-      const reservedResources = this.expanded[0].usedResources[type]
-      const totalResources = this.expanded[0].resources[type]
+      if (!this.expanded[0].resourcesUsed) return 0
+      const reservedResources = this.expanded[0].resourcesUsed[type]
+      const totalResources = this.expanded[0].resourcesTotal[type]
       if (reservedResources === 0 && totalResources === 0) return 0
       return (reservedResources / totalResources) * 100
     },
@@ -257,7 +257,7 @@ export default {
     getStatus (node) {
       const { updatedAt } = node
       const startTime = moment()
-      const end = moment(updatedAt)
+      const end = moment(new Date(parseInt(updatedAt)))
       const hours = startTime.diff(end, 'hours')
 
       if (hours < 2) return { color: 'green', status: 'up' }

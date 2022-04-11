@@ -44,8 +44,6 @@ spec:
             value: {{ .Values.explorer_url }}
           - name: VUE_APP_GRAPHQL_URL
             value: {{ .Values.graphql_url }}
-          - name: VUE_APP_GRIDPROXY_URL
-            value: {{ .Values.gridproxy_url }}
           - name: VUE_APP_NETWORK
             value: {{ .Values.network }}
           ports:

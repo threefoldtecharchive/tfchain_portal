@@ -8,7 +8,6 @@ import {
   web3Enable,
   // web3FromAddress,
 } from '@polkadot/extension-dapp';
-import { getNodesInfo, dedicatedAndFree, countPrice, countDiscount } from '../lib/dNodes';
 
 Vue.use(Vuex)
 
@@ -18,9 +17,7 @@ const store = new Vuex.Store({
     snackbar: false,
     connected: false,
     accounts: [],
-    loadingAPI: true,
-    loadingDNodes: false,
-    dNodes: [],
+    loadingAPI: true
   },
   mutations: {
     setAPI (state, payload) {
@@ -37,15 +34,6 @@ const store = new Vuex.Store({
     },
     setLoadingAPI (state, payload) {
       state.loadingAPI = payload.loading
-    },
-    setLoadingDNodes (state, payload) {
-      state.loadingDNodes = payload.loading
-    },
-    setDNodes (state, payload) {
-      state.dNodes = payload.dNodes
-    },
-    setNodeReserved (state, payload) {
-      state.nodes[payload.nodeId] = !state.nodes[payload.nodeId]
     }
   },
 
@@ -54,9 +42,7 @@ const store = new Vuex.Store({
     accounts: state => { return state.accounts },
     snackbar: state => { return state.snackbar },
     connected: state => { return state.connected },
-    loadingAPI: state => { return state.loadingAPI },
-    loadingDNodes: state => { return state.loadingDNodes },
-    dNodes: state => { return state.dNodes },
+    loadingAPI: state => { return state.loadingAPI }
   },
 
   actions: {
@@ -85,30 +71,6 @@ const store = new Vuex.Store({
       console.log(accountsWithBalance)
       context.commit('setAccounts', { accounts: accountsWithBalance })
     },
-
-    async getDNodes({ commit }) {
-      commit('setLoadingDNodes', { loading: true })
-
-      let res = await getNodesInfo()
-      let nodes = dedicatedAndFree(res.nodes, res.farms)
-
-      let dNodes = []
-      nodes.forEach(async(node) => {
-        let price = await countPrice(this.state.api, node.nodeID)
-        let discount = countDiscount(price, 50)
-        dNodes.push({
-            nodeId: node.nodeID,
-            location: node.country,
-            price: price,
-            discount: discount,
-          })
-      })
-
-      commit('setDNodes', { dNodes })
-
-      commit('setLoadingDNodes', { loading: false })
-    },
-
   }
 })
 

@@ -99,7 +99,7 @@ export async function rentStatusFromGraphql ( nodeID, currentTwinID) {
     }
 }
 
-export async function getAllContracts(api, nodeID) {
+export async function getActiveContracts(nodeID) {
   const res = await axios.post(config.graphqlUrl, {
     query: `query allContracts {
       nodeContracts(where: {nodeID_eq:${nodeID}}) {
@@ -108,6 +108,80 @@ export async function getAllContracts(api, nodeID) {
     }`,
     operation: 'allContracts'
   }, { timeout: 1000 })
+  return res.data.data.nodeContracts
+}
+
+export async function getRentContractID(api, nodeID) {
+  
   const rentContractID = await api.query.smartContractModule.activeRentContractForNode(nodeID)
-  return res.data.data.nodeContracts, rentContractID.toJSON().contract_id
+  return rentContractID.toJSON().contract_id
+}
+
+export async function countPrice(api, nodeID) {
+
+  const pricing = await api.query.tfgridModule.pricingPolicies(1)
+  const price = pricing.toJSON()
+
+  // call node resources
+  const res = await axios.post(config.graphqlUrl, {
+    query: `query getNodeResources {
+      nodes(where: {nodeID_eq: ${nodeID}}) {
+        resourcesTotal {
+          cru
+          hru
+          mru
+          sru
+        }
+      }
+    }`,
+    operation: 'getNodeResources'
+  }, { timeout: 1000 })
+
+  // count
+  const nodeResources = res.data.data.nodes[0].resourcesTotal
+  
+  const resources = {
+    sru: nodeResources.sru/1024/1024/1024,
+    hru: nodeResources.hru/1024/1024/1024,
+    mru: nodeResources.mru/1024/1024/1024,
+    cru: nodeResources.cru,
+  }
+  const SU = calSU(resources.cru, resources.mru)
+  const CU = calCU(resources.hru, resources.sru)
+  
+  const totalPrice = (CU * price.cu.value) + (SU * price.su.value)
+
+  // convert to usd
+  const usdPrice = totalPrice / 10000000
+
+  // discount
+  return usdPrice.toFixed(2)
+}
+
+export function countDiscount(totalPrice, discount) {
+  return totalPrice - (totalPrice * (discount/100))
+}
+
+export function calCU(cru, mru) {
+
+  let mru_used_1 = mru / 4;
+  let cru_used_1 = cru / 2;
+  let cu1 = mru_used_1 > cru_used_1? mru_used_1 : cru_used_1; 
+
+  let mru_used_2 = mru / 8;
+  let cru_used_2 = cru;
+  let cu2 = mru_used_2 > cru_used_2? mru_used_2 : cru_used_2; 
+
+  let mru_used_3 = mru / 2;
+  let cru_used_3 = cru / 4;
+  let cu3 = mru_used_3 > cru_used_3? mru_used_3 : cru_used_3; 
+
+  let cu = cu1 > cu2?  cu2 : cu1;
+  cu = cu > cu3?  cu3 : cu ;
+
+  return cu
+}
+
+export function calSU(hru, sru) {
+  return hru / 1200 + sru / 200
 }

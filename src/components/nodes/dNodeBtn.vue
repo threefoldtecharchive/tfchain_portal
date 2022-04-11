@@ -6,7 +6,7 @@
           :loading="loading"
           color="green"
           v-if="status === 'free'"
-          @click="unReserveNode(nodeId)"
+          @click="reserveNode(nodeId)"
         >
         Reserve
     </v-btn>
@@ -35,7 +35,8 @@
 import { 
     cancelRentContract, 
     createRentContract, 
-    getAllContracts,  
+    getActiveContracts,
+    getRentContractID,
     rentStatusFromChain,  
     // rentStatusFromGraphql 
     } from "./../../lib/dNodes";
@@ -71,13 +72,13 @@ export default {
         async unReserveNode(nodeId) {
             console.log(`check for contracts on node ${nodeId}`)
             
-            const {contracts, rentContractID} = await getAllContracts(this.$store.state.api, nodeId)
-
-            if (contracts.nodeContracts.length > 0) {
-                console.log(`node ${nodeId} has ${contracts.nodeContracts.length} active contracts`)
+            let contracts = await getActiveContracts(nodeId)
+            console.log(contracts)
+            if (contracts.length > 0) {
+                console.log(`node ${nodeId} has ${contracts.length} active contracts`)
             } else {
                 console.log(`unreserving node ${nodeId}`)
-                // const rentContractID = contracts.rentContracts[0].contractID
+                const rentContractID = await getRentContractID(this.$store.state.api, nodeId)
                 await cancelRentContract(this.$store.state.api, this.$route.params.accountID, rentContractID, (res) => {
                 console.log(res)
             })

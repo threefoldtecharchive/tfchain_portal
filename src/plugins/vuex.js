@@ -8,7 +8,7 @@ import {
   web3Enable,
   // web3FromAddress,
 } from '@polkadot/extension-dapp';
-import { getNodesInfo, dedicatedAndFree } from '../lib/dNodes';
+import { getNodesInfo, dedicatedAndFree, countPrice, countDiscount } from '../lib/dNodes';
 
 Vue.use(Vuex)
 
@@ -93,12 +93,14 @@ const store = new Vuex.Store({
       let nodes = dedicatedAndFree(res.nodes, res.farms)
 
       let dNodes = []
-      nodes.forEach(node => {
+      nodes.forEach(async(node) => {
+        let price = await countPrice(this.state.api, node.nodeID)
+        let discount = countDiscount(price, 50)
         dNodes.push({
             nodeId: node.nodeID,
             location: node.country,
-            price: node.price,
-            discount: node.discount,
+            price: price,
+            discount: discount,
           })
       })
 
@@ -107,10 +109,6 @@ const store = new Vuex.Store({
       commit('setLoadingDNodes', { loading: false })
     },
 
-    // reserveNode({commit}, {api, nodeId}) {
-    //   console.log('reserving node')
-    //   commit('setNodeReserved', { nodeId })
-    // }
   }
 })
 

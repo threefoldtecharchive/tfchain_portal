@@ -13,7 +13,6 @@
         :nodeId = "item.nodeId"
       />
     </template>
-
   </v-data-table>
 </template>
 
@@ -32,20 +31,12 @@ export default {
                 { text: 'Node ID', value: 'nodeId' },
                 { text: 'Location', value: 'location' },
                 { text: 'Price In USD', value: 'price' },
-                { text: 'After Discount', value: 'disc' },
+                { text: 'After Discount', value: 'discount' },
                 { text: 'Actions', value: 'actions' },
             ],
         }
     },
-
-    created:
-        async function() {
-          console.log("created")
-          const api = this.$store.state.api
-          const res = await api.query.tfgridModule.pricingPolicies(0)
-          console.log(res.toJSON())
-        }
-    }
+}
 
 
 </script>

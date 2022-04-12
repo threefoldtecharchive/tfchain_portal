@@ -5,35 +5,28 @@ import config from "../config";
 import { web3FromAddress } from "@polkadot/extension-dapp";
 
 export async function getNodesInfo() {
-  const res = await axios.post(
-    config.graphqlUrl,
-    {
-      query: `query getNodesInfo {
-        nodes {
+  let nodesIDs = [];
+  let nodesInfo = [];
+  nodesIDs.forEach(async (nodeID) => {
+    const res = await axios.post(
+      config.graphqlUrl,
+      {
+        query: `query getNodesInfo {
+        nodes (where: {nodeID_eq: ${nodeID}}) {
           country
           nodeID
-          farmID
-          resourcesUsed {
-            cru
-            hru
-            mru
-            sru
-          }
-        }
-        farms {
-          farmID
-          dedicatedFarm
-        }
       }`,
-      operation: "getNodesInfo",
-    },
-    { timeout: 1000 }
-  );
-
-  return res.data.data;
+        operation: "getNodesInfo",
+      },
+      { timeout: 1000 }
+    );
+    let node = res.data.data;
+    nodesInfo.push(node);
+  });
+  return nodesInfo;
 }
 
-export function getRentableNodes(nodes, farms) {
+export function getRentableNodes2(nodes, farms) {
   const dedicatedFarm = farms.filter((farm) => farm.dedicatedFarm);
   const dedicatedNodes = nodes.filter((node) =>
     dedicatedFarm.some((farm) => farm.farmID === node.farmID)
@@ -47,6 +40,41 @@ export function getRentableNodes(nodes, farms) {
     );
   });
   return freeNodes;
+}
+
+export async function getDedicatedFarms() {
+  const res = await axios.post(
+    config.graphqlUrl,
+    {
+      query: `{
+        farms(where: {dedicatedFarm_eq: true}) {
+          farmID
+        }
+      }
+      `,
+      operation: "getNodesInfo",
+    },
+    { timeout: 1000 }
+  );
+  return res.data.data.farms.map((farm) => farm.farmID);
+}
+
+export async function getDedicatedNodes(farmID) {
+  let res = await axios.post(
+    config.graphqlUrl,
+    {
+      query: `{
+          nodes(where: {farmID_eq: ${farmID}}) {
+            nodeID
+            country
+          }
+        }      
+      `,
+      operation: "getNodesInfo",
+    },
+    { timeout: 1000 }
+  );
+  return res.data.data.nodes;
 }
 
 export async function createRentContract(api, address, nodeId, callback) {
@@ -149,7 +177,7 @@ export async function countPrice(api, nodeID) {
   return usdPrice.toFixed(2);
 }
 
-export function countDiscount(totalPrice, discount) {
+export function calDiscount(totalPrice, discount) {
   return totalPrice - totalPrice * (discount / 100);
 }
 
@@ -177,13 +205,19 @@ export function calSU(hru, sru) {
 }
 
 export async function getDNodes(api) {
-  let res = await getNodesInfo();
-  let nodes = getRentableNodes(res.nodes, res.farms);
+  let farmsIDs = await getDedicatedFarms();
+
+  let nodes = [];
+  for (let farmID of farmsIDs) {
+    let _nodes = await getDedicatedNodes(farmID);
+    nodes = nodes.concat(_nodes);
+  }
+  console.log(nodes);
 
   let dNodes = [];
   nodes.forEach(async (node) => {
     let price = await countPrice(api, node.nodeID);
-    let discount = countDiscount(price, 50);
+    let discount = calDiscount(price, 50);
     dNodes.push({
       nodeId: node.nodeID,
       location: node.country,

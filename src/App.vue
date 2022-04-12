@@ -20,9 +20,12 @@
 
       <v-spacer></v-spacer>
       
-      <!-- <div class="explorer">
-        <v-btn color="primary" @click="$router.push('/explorer')">Capacity Explorer</v-btn>
-      </div> -->
+      <v-icon
+        v-if="!!this.$route.params.accountID"
+        @click="$router.push('/')"
+      >
+        mdi-logout
+      </v-icon>
     </v-app-bar>
 
     <v-main >

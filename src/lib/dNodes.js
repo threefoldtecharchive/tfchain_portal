@@ -115,20 +115,8 @@ export async function getRentStatus(api, nodeID, currentTwinID) {
   }
 }
 
-export async function getActiveContracts(nodeID) {
-  const res = await axios.post(
-    config.graphqlUrl,
-    {
-      query: `query allContracts {
-      nodeContracts(where: {nodeID_eq:${nodeID}}) {
-        contractID
-      }
-    }`,
-      operation: "allContracts",
-    },
-    { timeout: 1000 }
-  );
-  return res.data.data.nodeContracts;
+export async function getActiveContracts(api, nodeID) {
+  return await api.query.smartContractModule.activeNodeContracts(nodeID);
 }
 
 export async function getRentContractID(api, nodeID) {

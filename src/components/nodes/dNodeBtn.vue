@@ -87,7 +87,7 @@ export default {
       this.loading = true;
       console.log(`check for contracts on node ${nodeId}`);
 
-      let contracts = await getActiveContracts(nodeId);
+      let contracts = await getActiveContracts(this.$store.state.api, nodeId);
       if (contracts.length > 0) {
         console.log(`node ${nodeId} has ${contracts.length} active contracts`);
         this.loading = false;

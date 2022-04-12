@@ -48,30 +48,39 @@ export default {
   },
 
   created: async function () {
-    const currentTwinID = await getTwinID(
-      this.$store.state.api,
-      this.$route.params.accountID
-    );
-    this.status = await getRentStatus(
-      this.$store.state.api,
-      this.nodeId,
-      currentTwinID
-    );
+    this.loading = true;
+    this.status = await this.getStatus();
+    this.loading = false;
   },
 
   methods: {
-    async reserveNode(nodeId) {
+    async getStatus() {
+      const currentTwinID = await getTwinID(
+        this.$store.state.api,
+        this.$route.params.accountID
+      );
+      return await getRentStatus(
+        this.$store.state.api,
+        this.nodeId,
+        currentTwinID
+      );
+    },
+
+    reserveNode(nodeId) {
       this.loading = true;
       console.log(`reserving node ${nodeId}`);
-      await createRentContract(
+      createRentContract(
         this.$store.state.api,
         this.$route.params.accountID,
         nodeId,
         (res) => {
           console.log(res);
+          this.getStatus().then((res) => {
+            this.status = res;
+            this.loading = false;
+          });
         }
       );
-      this.loading = false;
     },
 
     async unReserveNode(nodeId) {
@@ -79,9 +88,9 @@ export default {
       console.log(`check for contracts on node ${nodeId}`);
 
       let contracts = await getActiveContracts(nodeId);
-      console.log(contracts);
       if (contracts.length > 0) {
         console.log(`node ${nodeId} has ${contracts.length} active contracts`);
+        this.loading = false;
       } else {
         console.log(`unreserving node ${nodeId}`);
         const rentContractID = await getRentContractID(
@@ -94,10 +103,13 @@ export default {
           rentContractID,
           (res) => {
             console.log(res);
+            this.getStatus().then((res) => {
+              this.status = res;
+              this.loading = false;
+            });
           }
         );
       }
-      this.loading = false;
     },
   },
 };

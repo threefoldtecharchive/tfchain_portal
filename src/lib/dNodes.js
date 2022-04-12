@@ -52,7 +52,7 @@ export async function getDedicatedFarms() {
         }
       }
       `,
-      operation: "getNodesInfo",
+      operation: "getDedicatedFarms",
     },
     { timeout: 1000 }
   );
@@ -70,7 +70,7 @@ export async function getDedicatedNodes(farmID) {
           }
         }      
       `,
-      operation: "getNodesInfo",
+      operation: "getNodes",
     },
     { timeout: 1000 }
   );

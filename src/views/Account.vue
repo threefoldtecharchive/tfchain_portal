@@ -87,7 +87,7 @@
         <Farm
           v-if="selectedItem === 'farms' && activated" 
         />
-        <DNode v-if="selectedItem === 'dnodes' && activated" />
+        <DedicatedNodes v-if="selectedItem === 'dnodes' && activated" />
 
         <Transfer
           v-if="selectedItem === 'transfer' && activated"
@@ -118,7 +118,7 @@ import { mapGetters } from 'vuex'
 import Farm from '../components/farm.vue'
 import Twin from '../components/twin.vue'
 import Transfer from '../components/transfer.vue'
-import DNode from '../components/dNode.vue'
+import DedicatedNodes from '../components/dedicatednodes/nodes.vue'
 import TermsAndConditions from './TermsAndConditions.vue'
 import { activateThroughActivationService, acceptTermsAndCondition, userAcceptedTermsAndConditions } from '../lib/activation' 
 import { getBalance } from '../lib/balance'
@@ -137,7 +137,7 @@ export default {
     Twin,
     TermsAndConditions,
     Transfer,
-    DNode,
+    DedicatedNodes,
   },
   
   data () {

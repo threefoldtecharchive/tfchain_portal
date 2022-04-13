@@ -36,7 +36,6 @@ const store = new Vuex.Store({
       state.loadingAPI = payload.loading
     }
   },
-
   getters: {
     api: state => { return state.api },
     accounts: state => { return state.accounts },
@@ -44,7 +43,6 @@ const store = new Vuex.Store({
     connected: state => { return state.connected },
     loadingAPI: state => { return state.loadingAPI }
   },
-
   actions: {
     async getAPI(context) {
       if (context.state.api) return
@@ -70,7 +68,7 @@ const store = new Vuex.Store({
       const accountsWithBalance = await appendBalanceToAccounts(context.state.api, accounts)
       console.log(accountsWithBalance)
       context.commit('setAccounts', { accounts: accountsWithBalance })
-    },
+    }
   }
 })
 

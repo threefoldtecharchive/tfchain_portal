@@ -1,17 +1,17 @@
 <template>
   <div class="container">
     <p style="font-size: 2rem">Dedicated Nodes</p>
-    <DNodesTable />
+    <NodesTable />
   </div>
 </template>
 
 <script>
-import DNodesTable from "./nodes/dNodesTable.vue";
+import NodesTable from "./nodesTable.vue";
 
 export default {
-  name: "DNode",
+  name: "DedicatedNodes",
   components: {
-    DNodesTable,
+    NodesTable,
   },
 
 };

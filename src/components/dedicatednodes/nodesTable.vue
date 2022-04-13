@@ -14,12 +14,12 @@
       dark
     >
       <template v-slot:[`item.actions`]="{ item }">
-        <DNodeBtn :nodeId="item.nodeId" />
+        <ActionBtn :nodeId="item.nodeId" />
       </template>
 
       <template v-slot:expanded-item="{ headers, item }">
         <td :colspan="headers.length">
-          <DNodeDetails :node="item" class="sheet"/>
+          <NodeDetails :node="item" class="sheet"/>
         </td>
       </template>
 
@@ -30,15 +30,15 @@
 </template>
 
 <script>
-import { getDNodes } from '../../lib/dNodes';
-import DNodeBtn from "./../../components/nodes/dNodeBtn.vue";
-import DNodeDetails from "./../../components/nodes/dNodeDetails.vue";
+import { getDNodes } from '../../lib/dedicatedNodes';
+import ActionBtn from "./actionBtn.vue";
+import NodeDetails from "./nodeDetaills.vue";
 
 export default {
-  name: "DNodesTable",
+  name: "NodesTable",
   components: {
-    DNodeBtn,
-    DNodeDetails
+    ActionBtn,
+    NodeDetails
   },
 
   data() {

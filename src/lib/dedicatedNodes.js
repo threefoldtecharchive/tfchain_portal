@@ -4,44 +4,6 @@ import config from "../config";
 
 import { web3FromAddress } from "@polkadot/extension-dapp";
 
-export async function getNodesInfo() {
-  let nodesIDs = [];
-  let nodesInfo = [];
-  nodesIDs.forEach(async (nodeID) => {
-    const res = await axios.post(
-      config.graphqlUrl,
-      {
-        query: `query getNodesInfo {
-        nodes (where: {nodeID_eq: ${nodeID}}) {
-          country
-          nodeID
-      }`,
-        operation: "getNodesInfo",
-      },
-      { timeout: 1000 }
-    );
-    let node = res.data.data;
-    nodesInfo.push(node);
-  });
-  return nodesInfo;
-}
-
-export function getRentableNodes2(nodes, farms) {
-  const dedicatedFarm = farms.filter((farm) => farm.dedicatedFarm);
-  const dedicatedNodes = nodes.filter((node) =>
-    dedicatedFarm.some((farm) => farm.farmID === node.farmID)
-  );
-  const freeNodes = dedicatedNodes.filter((node) => {
-    return (
-      node.resourcesUsed.hru === "0" &&
-      node.resourcesUsed.mru === "0" &&
-      node.resourcesUsed.sru === "0" &&
-      node.resourcesUsed.cru === "0"
-    );
-  });
-  return freeNodes;
-}
-
 export async function getDedicatedFarms() {
   const res = await axios.post(
     config.graphqlUrl,
@@ -60,7 +22,7 @@ export async function getDedicatedFarms() {
 }
 
 export async function getDedicatedNodes(farmID) {
-  let res = await axios.post(
+  const res = await axios.post(
     config.graphqlUrl,
     {
       query: `query MyQuery {
@@ -176,17 +138,17 @@ export function calDiscount(totalPrice, discount) {
 }
 
 export function calCU(cru, mru) {
-  let mru_used_1 = mru / 4;
-  let cru_used_1 = cru / 2;
-  let cu1 = mru_used_1 > cru_used_1 ? mru_used_1 : cru_used_1;
+  const mru_used_1 = mru / 4;
+  const cru_used_1 = cru / 2;
+  const cu1 = mru_used_1 > cru_used_1 ? mru_used_1 : cru_used_1;
 
-  let mru_used_2 = mru / 8;
-  let cru_used_2 = cru;
-  let cu2 = mru_used_2 > cru_used_2 ? mru_used_2 : cru_used_2;
+  const mru_used_2 = mru / 8;
+  const cru_used_2 = cru;
+  const cu2 = mru_used_2 > cru_used_2 ? mru_used_2 : cru_used_2;
 
-  let mru_used_3 = mru / 2;
-  let cru_used_3 = cru / 4;
-  let cu3 = mru_used_3 > cru_used_3 ? mru_used_3 : cru_used_3;
+  const mru_used_3 = mru / 2;
+  const cru_used_3 = cru / 4;
+  const cu3 = mru_used_3 > cru_used_3 ? mru_used_3 : cru_used_3;
 
   let cu = cu1 > cu2 ? cu2 : cu1;
   cu = cu > cu3 ? cu3 : cu;
@@ -199,7 +161,7 @@ export function calSU(hru, sru) {
 }
 
 export async function getDNodes(api) {
-  let farmsIDs = await getDedicatedFarms();
+  const farmsIDs = await getDedicatedFarms();
 
   let nodes = [];
   for (let farmID of farmsIDs) {
@@ -235,7 +197,7 @@ export async function getDNodes(api) {
 }
 
 export async function getIpsForFarm(farmID) {
-  let res = await axios.post(
+  const res = await axios.post(
     config.graphqlUrl,
     {
       query: `query MyQuery {

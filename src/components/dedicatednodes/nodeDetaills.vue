@@ -150,7 +150,7 @@
 
 <script>
 export default {
-  name: "DNodeDetails",
+  name: "NodeDetails",
   props: ["node"],
 
   data() {

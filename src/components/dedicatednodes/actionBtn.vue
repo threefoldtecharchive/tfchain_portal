@@ -33,11 +33,11 @@ import {
   getActiveContracts,
   getRentContractID,
   getRentStatus,
-} from "./../../lib/dNodes";
-import { getTwinID } from "./../../lib/twin";
+} from "../../lib/dedicatedNodes";
+import { getTwinID } from "../../lib/twin";
 
 export default {
-  name: "DNodeBtn",
+  name: "ActionBtn",
   props: ["nodeId"],
 
   data() {
@@ -105,7 +105,7 @@ export default {
       this.loading = true;
       console.log(`check for contracts on node ${nodeId}`);
 
-      let contracts = await getActiveContracts(this.$store.state.api, nodeId);
+      const contracts = await getActiveContracts(this.$store.state.api, nodeId);
       if (contracts.length > 0) {
         console.log(`node ${nodeId} has ${contracts.length} active contracts`);
         this.loading = false;

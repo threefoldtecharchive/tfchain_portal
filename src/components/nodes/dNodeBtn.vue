@@ -75,15 +75,28 @@ export default {
         nodeId,
         (res) => {
           console.log(res);
-          if (res.dispatchInfo != undefined) {
-            this.getStatus().then((status) => {
-              this.status = status;
-              this.loading = false;
-            });
+          switch (res.status.type) {
+            case "Ready":
+              this.$toasted.show(
+                `Transaction submitted: Reserving node ${nodeId}`
+              );
+              break;
+            case "Finalized":
+              this.$toasted.show(
+                `Transaction successed: Node ${nodeId} reserved`
+              );
+              this.getStatus().then((status) => {
+                this.status = status;
+                this.loading = false;
+              });
+              break;
           }
         }
       ).catch((err) => {
-        console.log(err);
+        console.log(err.message);
+        this.$toasted.show(`Error:  ${err.message}`, {
+          type: "error",
+        });
         this.loading = false;
       });
     },
@@ -108,15 +121,28 @@ export default {
           rentContractID,
           (res) => {
             console.log(res);
-            if (res.dispatchInfo != undefined) {
-              this.getStatus().then((status) => {
-                this.status = status;
-                this.loading = false;
-              });
+            switch (res.status.type) {
+              case "Ready":
+                this.$toasted.show(
+                  `Transaction submitted: Unreserving node ${nodeId}`
+                );
+                break;
+              case "Finalized":
+                this.$toasted.show(
+                  `Transaction successed: Node ${nodeId} Unreserved`
+                );
+                this.getStatus().then((status) => {
+                  this.status = status;
+                  this.loading = false;
+                });
+                break;
             }
           }
         ).catch((err) => {
-          console.log(err);
+          console.log(err.message);
+          this.$toasted.show(`Error:  ${err.message}`, {
+            type: "error",
+          });
           this.loading = false;
         });
       }

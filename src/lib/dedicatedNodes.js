@@ -3,6 +3,7 @@ import axios from "axios";
 import config from "../config";
 
 import { web3FromAddress } from "@polkadot/extension-dapp";
+import { getBalance } from "./balance";
 
 export async function getDedicatedFarms() {
   const res = await axios.post(
@@ -55,14 +56,14 @@ export async function createRentContract(api, address, nodeId, callback) {
   const injector = await web3FromAddress(address);
   return api.tx.smartContractModule
     .createRentContract(nodeId)
-    .signAndSend(address, { signer: injector.signer }, callback)
+    .signAndSend(address, { signer: injector.signer }, callback);
 }
 
 export async function cancelRentContract(api, address, contractId, callback) {
   const injector = await web3FromAddress(address);
   return api.tx.smartContractModule
     .cancelContract(contractId)
-    .signAndSend(address, { signer: injector.signer }, callback)
+    .signAndSend(address, { signer: injector.signer }, callback);
 }
 
 export async function getRentStatus(api, nodeID, currentTwinID) {
@@ -123,18 +124,65 @@ export async function countPrice(api, nodeID) {
     mru: nodeResources.mru / 1024 / 1024 / 1024,
     cru: nodeResources.cru,
   };
-  const SU = calSU(resources.cru, resources.mru);
-  const CU = calCU(resources.hru, resources.sru);
+  const SU = calSU(resources.hru, resources.sru);
+  const CU = calCU(resources.cru, resources.mru);
 
-  const totalPrice = CU * price.cu.value + SU * price.su.value;
+  const totalPrice =
+    CU * price.cu.value * 24 * 30 + SU * price.su.value * 24 * 30;
 
   const usdPrice = totalPrice / 10000000;
 
   return usdPrice.toFixed(2);
 }
 
-export function calDiscount(totalPrice, discount) {
-  return totalPrice - totalPrice * (discount / 100);
+export async function calDiscount(api, address, price) {
+  // discount for Dedicated Nodes
+  const pricing = await api.query.tfgridModule.pricingPolicies(1);
+  const discount = pricing.toJSON().discount_for_dedicated_nodes;
+
+  let totalPrice = price - price * (discount / 100);
+
+  // discount for Twin Balance
+  const balance = (await getBalance(api, address)) / 1e7;
+
+  const discountPackages = {
+    none: {
+      duration: 0,
+      discount: 0,
+    },
+    default: {
+      duration: 3,
+      discount: 20,
+    },
+    bronze: {
+      duration: 6,
+      discount: 30,
+    },
+    silver: {
+      duration: 12,
+      discount: 40,
+    },
+    gold: {
+      duration: 36,
+      discount: 60,
+    },
+  };
+
+  let selectedPackage = discountPackages.none;
+  console.log({selectedPackage})
+
+  for (let pkg in discountPackages) {
+    if (balance >= totalPrice * pkg.duration) {
+      selectedPackage = pkg;
+    }
+  }
+  console.log({selectedPackage})
+
+  totalPrice = totalPrice - totalPrice * (selectedPackage.discount / 100);
+
+  console.log({totalPrice})
+
+  return totalPrice;
 }
 
 export function calCU(cru, mru) {
@@ -160,7 +208,7 @@ export function calSU(hru, sru) {
   return hru / 1200 + sru / 200;
 }
 
-export async function getDNodes(api) {
+export async function getDNodes(api, address) {
   const farmsIDs = await getDedicatedFarms();
 
   let nodes = [];
@@ -172,7 +220,7 @@ export async function getDNodes(api) {
   let dNodes = [];
   nodes.forEach(async (node) => {
     let price = await countPrice(api, node.nodeID);
-    let discount = calDiscount(price, 50);
+    let discount = await calDiscount(api, address, price);
     let ips = await getIpsForFarm(node.farmID);
     dNodes.push({
       nodeId: node.nodeID,
@@ -213,4 +261,8 @@ export async function getIpsForFarm(farmID) {
     { timeout: 1000 }
   );
   return res.data.data.farms[0].publicIPs.length;
+}
+
+export function byteToGB(capacity) {
+  return (capacity / 1024 / 1024 / 1024).toFixed(0);
 }

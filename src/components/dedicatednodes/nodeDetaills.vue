@@ -32,7 +32,7 @@
                     Disk Resource Unit (HDD)
                   </v-list-item-title>
                 </v-list-item-content>
-                {{ (node.resources.hru / 1024 / 1024 / 1024).toFixed(0) }} GB
+                {{ byteToGB(node.resources.hru) }} GB
               </v-list-item>
               <v-divider />
 
@@ -42,7 +42,7 @@
                     Disk Resource Unit (SSD)
                   </v-list-item-title>
                 </v-list-item-content>
-                {{ (node.resources.sru / 1024 / 1024 / 1024).toFixed(0) }} GB
+                {{ byteToGB(node.resources.sru) }} GB
               </v-list-item>
               <v-divider />
 
@@ -50,7 +50,7 @@
                 <v-list-item-content>
                   <v-list-item-title> Memory Resource Unit </v-list-item-title>
                 </v-list-item-content>
-                {{ (node.resources.mru / 1024 / 1024 / 1024).toFixed(0) }} GB
+                {{ byteToGB(node.resources.mru) }} GB
               </v-list-item>
             </v-list>
           </v-col>
@@ -86,9 +86,7 @@
 
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>
-                    City
-                  </v-list-item-title>
+                  <v-list-item-title> City </v-list-item-title>
                 </v-list-item-content>
                 {{ node.location.city }}
               </v-list-item>
@@ -96,9 +94,7 @@
 
               <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title>
-                    Longitude
-                  </v-list-item-title>
+                  <v-list-item-title> Longitude </v-list-item-title>
                 </v-list-item-content>
                 {{ node.location.long }}
               </v-list-item>
@@ -133,12 +129,11 @@
         <v-row>
           <v-col cols="12">
             <v-list color="transparent">
-
               <v-list-item>
                 <v-list-item-content>
                   <v-list-item-title> Farm Public Ips </v-list-item-title>
                 </v-list-item-content>
-                {{ node.pubIps }} 
+                {{ node.pubIps }}
               </v-list-item>
             </v-list>
           </v-col>
@@ -149,6 +144,8 @@
 </template>
 
 <script>
+import { byteToGB } from '../../lib/dedicatedNodes'
+
 export default {
   name: "NodeDetails",
   props: ["node"],
@@ -157,6 +154,12 @@ export default {
     return {
       loading: false,
     };
+  },
+
+  methods: {
+    byteToGB(capacity) {
+      return byteToGB(capacity);
+    }
   },
 };
 </script>

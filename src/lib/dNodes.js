@@ -94,9 +94,6 @@ export async function createRentContract(api, address, nodeId, callback) {
   return api.tx.smartContractModule
     .createRentContract(nodeId)
     .signAndSend(address, { signer: injector.signer }, callback)
-    .catch((error) => {
-      console.log(error);
-    });
 }
 
 export async function cancelRentContract(api, address, contractId, callback) {
@@ -104,9 +101,6 @@ export async function cancelRentContract(api, address, contractId, callback) {
   return api.tx.smartContractModule
     .cancelContract(contractId)
     .signAndSend(address, { signer: injector.signer }, callback)
-    .catch((error) => {
-      console.log(error);
-    });
 }
 
 export async function getRentStatus(api, nodeID, currentTwinID) {

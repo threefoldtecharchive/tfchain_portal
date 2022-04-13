@@ -75,12 +75,17 @@ export default {
         nodeId,
         (res) => {
           console.log(res);
-          this.getStatus().then((res) => {
-            this.status = res;
-            this.loading = false;
-          });
+          if (res.dispatchInfo != undefined) {
+            this.getStatus().then((status) => {
+              this.status = status;
+              this.loading = false;
+            });
+          }
         }
-      );
+      ).catch((err) => {
+        console.log(err);
+        this.loading = false;
+      });
     },
 
     async unReserveNode(nodeId) {
@@ -97,18 +102,23 @@ export default {
           this.$store.state.api,
           nodeId
         );
-        await cancelRentContract(
+        cancelRentContract(
           this.$store.state.api,
           this.$route.params.accountID,
           rentContractID,
           (res) => {
             console.log(res);
-            this.getStatus().then((res) => {
-              this.status = res;
-              this.loading = false;
-            });
+            if (res.dispatchInfo != undefined) {
+              this.getStatus().then((status) => {
+                this.status = status;
+                this.loading = false;
+              });
+            }
           }
-        );
+        ).catch((err) => {
+          console.log(err);
+          this.loading = false;
+        });
       }
     },
   },

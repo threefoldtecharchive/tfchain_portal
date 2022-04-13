@@ -63,12 +63,24 @@ export async function getDedicatedNodes(farmID) {
   let res = await axios.post(
     config.graphqlUrl,
     {
-      query: `{
-          nodes(where: {farmID_eq: ${farmID}}) {
-            nodeID
-            country
+      query: `query MyQuery {
+        nodes(where: {farmID_eq: ${farmID}}) {
+          resourcesTotal {
+            cru
+            hru
+            mru
+            sru
           }
-        }      
+          nodeID
+          location {
+            latitude
+            longitude
+          }
+          country
+          city
+          farmID
+        }
+      }      
       `,
       operation: "getNodes",
     },
@@ -200,18 +212,49 @@ export async function getDNodes(api) {
     let _nodes = await getDedicatedNodes(farmID);
     nodes = nodes.concat(_nodes);
   }
-  console.log(nodes);
 
   let dNodes = [];
   nodes.forEach(async (node) => {
     let price = await countPrice(api, node.nodeID);
     let discount = calDiscount(price, 50);
+    let ips = await getIpsForFarm(node.farmID);
     dNodes.push({
       nodeId: node.nodeID,
-      location: node.country,
       price: price,
       discount: discount,
+      location: {
+        country: node.country,
+        city: node.city,
+        long: node.location.longitude,
+        lat: node.location.latitude,
+      },
+      resources: {
+        cru: node.resourcesTotal.cru,
+        mru: node.resourcesTotal.mru,
+        hru: node.resourcesTotal.hru,
+        sru: node.resourcesTotal.sru,
+      },
+      pubIps: ips,
     });
   });
   return dNodes;
+}
+
+export async function getIpsForFarm(farmID) {
+  let res = await axios.post(
+    config.graphqlUrl,
+    {
+      query: `query MyQuery {
+        farms(where: {farmID_eq: ${farmID}}) {
+          publicIPs {
+            id
+          }
+        }
+      }      
+      `,
+      operation: "getNodes",
+    },
+    { timeout: 1000 }
+  );
+  return res.data.data.farms[0].publicIPs.length;
 }

@@ -1,39 +1,58 @@
 <template>
-  <v-data-table
-    :headers="headers"
-    :items="dNodes"
-    :items-per-page="10"
-    :loading="loading"
-    class="elevation-1"
-    dark
-  >
-    <template v-slot:[`item.actions`]="{ item }">
-      <DNodeBtn :nodeId="item.nodeId" />
-    </template>
-  </v-data-table>
+<div>
+    <template>
+    <v-data-table
+      :headers="headers"
+      :items="dNodes"
+      :expanded.sync="expanded"
+      item-key="nodeId"
+      show-expand
+      single-expand
+      class="elevation-1"
+      :items-per-page="10"
+      :loading="loading"
+      dark
+    >
+      <template v-slot:[`item.actions`]="{ item }">
+        <DNodeBtn :nodeId="item.nodeId" />
+      </template>
+
+      <template v-slot:expanded-item="{ headers, item }">
+        <td :colspan="headers.length">
+          <DNodeDetails :node="item" class="sheet"/>
+        </td>
+      </template>
+
+    </v-data-table>
+  </template>
+</div>
+  
 </template>
 
 <script>
 import { getDNodes } from '../../lib/dNodes';
 import DNodeBtn from "./../../components/nodes/dNodeBtn.vue";
+import DNodeDetails from "./../../components/nodes/dNodeDetails.vue";
 
 export default {
   name: "DNodesTable",
   components: {
     DNodeBtn,
+    DNodeDetails
   },
 
   data() {
     return {
       headers: [
         { text: "Node ID", value: "nodeId" },
-        { text: "Location", value: "location" },
+        { text: "Location", value: "location.country" },
         { text: "Price In USD", value: "price" },
         { text: "After Discount", value: "discount" },
         { text: "Actions", value: "actions" },
       ],
       loading: false,
       dNodes: [],
+      expanded: [],
     };
   },
 
@@ -48,5 +67,9 @@ export default {
 <style scoped>
 .v-data-table {
   background: #252c48;
+}
+
+.sheet {
+  margin: 10px;
 }
 </style>

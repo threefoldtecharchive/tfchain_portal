@@ -169,18 +169,14 @@ export async function calDiscount(api, address, price) {
   };
 
   let selectedPackage = discountPackages.none;
-  console.log({selectedPackage})
 
   for (let pkg in discountPackages) {
     if (balance >= totalPrice * pkg.duration) {
       selectedPackage = pkg;
     }
   }
-  console.log({selectedPackage})
 
   totalPrice = totalPrice - totalPrice * (selectedPackage.discount / 100);
-
-  console.log({totalPrice})
 
   return totalPrice;
 }

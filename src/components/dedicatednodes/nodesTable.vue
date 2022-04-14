@@ -23,6 +23,26 @@
           {{ byteToGB(item.resources.hru) }} GB
         </template>
 
+        <template v-slot:[`item.discount`]="{ item }">
+          <v-tooltip bottom color="primary" close-delay="700" >
+            <template v-slot:activator="{ on, attrs }">
+              <span v-bind="attrs" v-on="on">{{ item.discount }} *</span>
+            </template>
+            <span
+              >Discounts: <br />
+              <ul>
+                <li>{{item.applyedDiscount.first}}% for the dedicated node</li>
+                <li>{{item.applyedDiscount.second}}% for the twin balance</li>
+              </ul>
+              See
+              <a target="_blank"
+                href="https://library.threefold.me/info/threefold/#/tfgrid/grid/pricing?id=discount-levels"
+                ><p style="color: blue; display: inline">discount levels</p></a
+              ></span
+            >
+          </v-tooltip>
+        </template>
+
         <template v-slot:[`item.actions`]="{ item }">
           <ActionBtn :nodeId="item.nodeId" />
         </template>
@@ -69,7 +89,10 @@ export default {
 
   created: async function () {
     this.loading = true;
-    this.dNodes = await getDNodes(this.$store.state.api, this.$route.params.accountID);
+    this.dNodes = await getDNodes(
+      this.$store.state.api,
+      this.$route.params.accountID
+    );
     this.loading = false;
   },
 
@@ -88,5 +111,8 @@ export default {
 
 .sheet {
   margin: 10px;
+}
+.v-tooltip__content {
+  pointer-events: initial;
 }
 </style>

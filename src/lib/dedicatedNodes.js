@@ -94,51 +94,33 @@ export async function getRentContractID(api, nodeID) {
   return rentContractID.toJSON().contract_id;
 }
 
-export async function countPrice(api, nodeID) {
+export async function getPrices(api){
   const pricing = await api.query.tfgridModule.pricingPolicies(1);
-  const price = pricing.toJSON();
+  return pricing.toJSON();
+}
 
-  const res = await axios.post(
-    config.graphqlUrl,
-    {
-      query: `query getNodeResources {
-      nodes(where: {nodeID_eq: ${nodeID}}) {
-        resourcesTotal {
-          cru
-          hru
-          mru
-          sru
-        }
-      }
-    }`,
-      operation: "getNodeResources",
-    },
-    { timeout: 1000 }
-  );
-
-  const nodeResources = res.data.data.nodes[0].resourcesTotal;
+export function countPrice(prices, node) {
 
   const resources = {
-    sru: nodeResources.sru / 1024 / 1024 / 1024,
-    hru: nodeResources.hru / 1024 / 1024 / 1024,
-    mru: nodeResources.mru / 1024 / 1024 / 1024,
-    cru: nodeResources.cru,
+    sru: node.resourcesTotal.sru / 1024 / 1024 / 1024,
+    hru: node.resourcesTotal.hru / 1024 / 1024 / 1024,
+    mru: node.resourcesTotal.mru / 1024 / 1024 / 1024,
+    cru: node.resourcesTotal.cru,
   };
   const SU = calSU(resources.hru, resources.sru);
   const CU = calCU(resources.cru, resources.mru);
 
   const totalPrice =
-    CU * price.cu.value * 24 * 30 + SU * price.su.value * 24 * 30;
+    CU * prices.cu.value * 24 * 30 + SU * prices.su.value * 24 * 30;
 
   const usdPrice = totalPrice / 10000000;
 
   return usdPrice.toFixed(2);
 }
 
-export async function calDiscount(api, address, price) {
+export async function calDiscount(api, address, pricing, price) {
   // discount for Dedicated Nodes
-  const pricing = await api.query.tfgridModule.pricingPolicies(1);
-  const discount = pricing.toJSON().discount_for_dedicated_nodes;
+  const discount = pricing.discount_for_dedicated_nodes;
 
   let totalPrice = price - price * (discount / 100);
 
@@ -178,7 +160,7 @@ export async function calDiscount(api, address, price) {
 
   totalPrice = totalPrice - totalPrice * (selectedPackage.discount / 100);
 
-  return totalPrice;
+  return [totalPrice, selectedPackage.discount];
 }
 
 export function calCU(cru, mru) {
@@ -213,15 +195,17 @@ export async function getDNodes(api, address) {
     nodes = nodes.concat(_nodes);
   }
 
+  const pricing = await getPrices(api);
   let dNodes = [];
   nodes.forEach(async (node) => {
-    let price = await countPrice(api, node.nodeID);
-    let discount = await calDiscount(api, address, price);
+    let price = countPrice(pricing, node);
+    let [discount, discountLevel] = await calDiscount(api, address, pricing, price);
     let ips = await getIpsForFarm(node.farmID);
     dNodes.push({
       nodeId: node.nodeID,
       price: price,
       discount: discount,
+      applyedDiscount: {first: pricing.discount_for_dedicated_nodes, second: discountLevel },
       location: {
         country: node.country,
         city: node.city,

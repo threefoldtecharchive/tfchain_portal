@@ -153,14 +153,14 @@ export async function calDiscount(api, address, pricing, price) {
   let selectedPackage = discountPackages.none;
 
   for (let pkg in discountPackages) {
-    if (balance >= totalPrice * pkg.duration) {
+    if (balance > totalPrice * discountPackages[pkg].duration) {
       selectedPackage = pkg;
     }
   }
 
-  totalPrice = totalPrice - totalPrice * (selectedPackage.discount / 100);
+  totalPrice = totalPrice - totalPrice * (discountPackages[selectedPackage].discount / 100);
 
-  return [totalPrice, selectedPackage.discount];
+  return [totalPrice, discountPackages[selectedPackage].discount];
 }
 
 export function calCU(cru, mru) {

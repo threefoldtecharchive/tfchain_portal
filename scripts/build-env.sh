@@ -49,6 +49,12 @@ then
     exit 64
 fi
 
+if [ -z ${VUE_APP_GRIDPROXY_URL+x} ]
+then
+    echo 'Error! $VUE_APP_GRIDPROXY_URL is required.'
+    exit 64
+fi
+
 if [ -z ${VUE_APP_NETWORK+x} ]
 then
     echo 'Error! $VUE_APP_NETWORK is required.'
@@ -64,6 +70,7 @@ window.VUE_APP_BRIDGE_TFT_ADDRESS = '$VUE_APP_BRIDGE_TFT_ADDRESS';
 window.VUE_APP_ACTIVATION_SERVICE_URL = '$VUE_APP_ACTIVATION_SERVICE_URL';
 window.VUE_APP_EXPLORER_URL = '$VUE_APP_EXPLORER_URL';
 window.VUE_APP_GRAPHQL_URL = '$VUE_APP_GRAPHQL_URL';
+window.VUE_APP_GRIDPROXY_URL = '$VUE_APP_GRIDPROXY_URL';
 window.VUE_APP_NETWORK = '$VUE_APP_NETWORK';
 "
 

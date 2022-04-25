@@ -160,7 +160,7 @@ export async function calDiscount(api, address, pricing, price) {
 
   totalPrice = totalPrice - totalPrice * (discountPackages[selectedPackage].discount / 100);
 
-  return [totalPrice, discountPackages[selectedPackage].discount];
+  return [totalPrice.toFixed(2), discountPackages[selectedPackage].discount];
 }
 
 export function calCU(cru, mru) {

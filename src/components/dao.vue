@@ -63,6 +63,10 @@
         <span class="timer">You can vote until: {{ proposal.timeUntilEnd }}</span>
       </div>
     </div>
+
+    <div v-if="proposals.length === 0" class="note">
+      <h3>No Active proposals at this time</h3>
+    </div>
   </div>
 </template>
 <script>
@@ -246,5 +250,10 @@ export default {
 .progress {
   margin-top: 1em;
   margin-bottom: 1em;
+}
+.note {
+  text-align: center;
+  margin-top: 5em;
+  font-size: 32px;
 }
 </style>

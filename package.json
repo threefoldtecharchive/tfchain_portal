@@ -1,6 +1,6 @@
 {
   "name": "tfchain_portal",
-  "version": "v1.4.0",
+  "version": "v1.6.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

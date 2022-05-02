@@ -83,6 +83,8 @@ explorer_url:
 
 graphql_url:
 
+gridproxy_url:
+
 network:
 #network: dev
 #network: test

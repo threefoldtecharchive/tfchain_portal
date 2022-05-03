@@ -1,6 +1,25 @@
 <template>
   <div class="main">
-    <h2>Proposals</h2>
+    <div class="header">
+      <h2>Proposals</h2>
+      <v-tooltip bottom class="infoTooltip">
+        <template v-slot:activator="{ on, attrs }">
+          <v-icon
+            class="infoIcon"
+            dark
+            right
+            v-bind="attrs"
+            v-on="on"
+            @click="openInfoModal = true"
+          >
+            mdi-information-outline
+          </v-icon>
+        </template>
+        <span>
+          Click for more info
+        </span>
+      </v-tooltip>
+    </div>
     <div
       v-for="proposal in proposals"
       :key="proposal.hash"
@@ -19,7 +38,7 @@
             xs="5"
             md="5"
             class="yesContainer"
-            @click="voteProposal(proposal.hash, true)"
+            @click="openVoteProposalModal(proposal.hash, true)"
           >
             <span>Yes</span>
             <v-progress-circular
@@ -34,7 +53,7 @@
             xs="5"
             md="5"
             class="noContainer"
-            @click="voteProposal(proposal.hash, false)"
+            @click="openVoteProposalModal(proposal.hash, false)"
           >
             <span>No</span>
             <v-progress-circular
@@ -52,14 +71,11 @@
             striped
           >
             <template v-slot:default="{ value }">
-              <strong>{{ Math.ceil(value) }}% voted</strong>
+              <strong>{{ Math.ceil(value) }}% in favor</strong>
             </template>
           </v-progress-linear>
         </v-row>
-
         <span class="tip">Click on yes/no to vote!</span>
-
-
         <span class="timer">You can vote until: {{ proposal.timeUntilEnd }}</span>
       </div>
     </div>
@@ -67,6 +83,17 @@
     <div v-if="proposals.length === 0" class="note">
       <h3>No Active proposals at this time</h3>
     </div>
+    <InfoModal
+      :open="this.openInfoModal"
+      :close="() => openInfoModal = false"
+    />
+    <VoteModal
+      :open="this.openVoteModal"
+      :approved="this.approved"
+      :close="() => openVoteModal = false"
+      :farms="this.farms"
+      :vote="this.voteProposal"
+    />
   </div>
 </template>
 <script>
@@ -78,22 +105,20 @@ import {
   getFarm,
 } from '../lib/farm'
 import { getTwinID } from '../lib/twin'
+import InfoModal from './dao/infoModal.vue'
+import VoteModal from './dao/voteModal.vue'
+
 export default {
+  components: {
+    InfoModal,
+    VoteModal
+  },
+
   async mounted () {
     this.$store.dispatch('getAPI')
     this.proposals = await getProposals(this.$store.state.api)
     this.twinID = await getTwinID(this.$store.state.api, this.$route.params.accountID)
     this.farms = await getFarm(this.$store.state.api, this.twinID)
-  },
-
-  computed: {
-    // a computed getter
-    progress: function (hash) {
-      const proposal = this.proposals.filter(p => p.hash === hash)
-
-      const total = proposal.votes.ayes.length + proposal.votes.nayes.length
-      return (total / proposal.threshold) * 100
-    }
   },
 
   data () {
@@ -104,19 +129,26 @@ export default {
       loadingVote: false,
       loadingYes: false,
       loadingNo: false,
-      selectedProposal: undefined
+      selectedProposal: undefined,
+      openInfoModal: false,
+      openVoteModal: false,
+      approved: false
     }
   },
 
   methods : {
-    voteProposal (hash, approve) {
+    openVoteProposalModal (hash, approved) {
       if (this.farms.length === 0) {
         alert("You need to create a farm first")
         return
       }
+      this.approved = approved
       this.selectedProposal = hash
-      this.setLoading(approve, true)
-      vote(this.$route.params.accountID, this.$store.state.api, this.farms[0].id, hash, approve, (res) => {
+      this.openVoteModal = true
+    },
+    voteProposal (farmID) {
+      this.setLoading(this.approved, true)
+      vote(this.$route.params.accountID, this.$store.state.api, farmID, this.selectedProposal, this.approved, (res) => {
         console.log(res)
         if (res instanceof Error) {
           console.log(res)
@@ -137,18 +169,18 @@ export default {
             console.log(`\t' ${phase}: ${section}.${method}:: ${data}`)
             if (section === 'dao' && method === 'Voted') {
               this.$toasted.show('Voted for proposal!')
-              this.setLoading(approve, false)
+              this.setLoading(this.approved, false)
               getProposals(this.$store.state.api)
                 .then(proposals => this.proposals = proposals)
             } else if (section === 'system' && method === 'ExtrinsicFailed') {
               this.$toasted.show('Vote failed')
-              this.setLoading(approve, false)
+              this.setLoading(this.approved, false)
             }
           })
         }
       }).catch(err => {
         this.$toasted.show(err.message)
-        this.setLoading(approve, false)
+        this.setLoading(this.approved, false)
       })
     },
     setLoading (approve, value) {
@@ -161,9 +193,12 @@ export default {
     getProgress (hash) {
       const proposal = this.proposals.filter(p => p.hash === hash)[0]
 
-      console.log(proposal)
-      const total = proposal.ayes.length + proposal.nayes.length
-      return (total / proposal.threshold) * 100
+      const totalAyeWeight = proposal.ayes.reduce((total, v) => total + v.weight, 0)
+      const totalNayeWeight = proposal.nayes.reduce((total, v) => total + v.weight, 0)
+
+      const total = totalAyeWeight + totalNayeWeight
+
+      return (totalAyeWeight / total) * 100
     }
   }
 }
@@ -200,7 +235,7 @@ export default {
   flex-direction: column;
 }
 .votesContainer {
-  height: 5em;
+  height: 7em;
   margin: 1em;
   margin-top: 0;
   margin-bottom: 2em;
@@ -208,6 +243,7 @@ export default {
   justify-content: space-between !important;
 }
 .yesContainer {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -220,6 +256,7 @@ export default {
   font-size: 24px;
 }
 .noContainer {
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -236,7 +273,7 @@ export default {
   font-size: 32px !important;
 }
 .tip {
-  margin-top: 2em;
+  margin-top: 1em;
   text-align: center;
   color: rgb(160, 160, 160) !important;
   font-size: 20px;
@@ -255,5 +292,9 @@ export default {
   text-align: center;
   margin-top: 5em;
   font-size: 32px;
+}
+.header {
+  display: flex;
+  justify-content: center;
 }
 </style>

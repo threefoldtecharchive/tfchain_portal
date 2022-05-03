@@ -321,7 +321,7 @@
     "end": "BlockNumber"
   },
   "VoteWeight": {
-    "who": "AccountId",
-    "weight": "u32"
+    "farm_id": "u32",
+    "weight": "u64"
   }
 }

@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import { getNodesByFarm } from '../../lib/nodes'
+
 export default {
   name: 'Info',
   props: ['open', 'close', 'approved', 'farms', 'vote'],
@@ -57,7 +59,12 @@ export default {
   },
 
   methods: {
-    voteApproval () {
+    async voteApproval () {
+      const nodes = await getNodesByFarm(this.selectedFarm)
+      if (nodes.length === 0) {
+        alert("Your selected farm has no nodes attached.")
+        return
+      }
       this.vote(this.selectedFarm)
       this.close()
     }

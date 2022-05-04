@@ -30,7 +30,7 @@
         <div class="infoContainer">
           <span>Proposal: {{ proposal.hash }}</span>
           <span>Description: {{ proposal.description }}</span>
-          <span>Link: {{ proposal.link }}</span>
+          <span>Link: <a v-bind:href="proposal.link">{{ proposal.link }}</a></span>
         </div>
 
         <v-row class="votesContainer" v-if="proposal.ayes">
@@ -233,6 +233,9 @@ export default {
   padding: 1em;
   display: flex;
   flex-direction: column;
+}
+.infoContainer a {
+  color: orange;
 }
 .votesContainer {
   height: 7em;

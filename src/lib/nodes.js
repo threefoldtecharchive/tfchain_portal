@@ -12,8 +12,9 @@ export async function getNodesByFarmID(api, farms) {
   const data = await Promise.all(nodes);
 
   if (data.length === 0) return [];
-
-  const nodesWithResources = await data[0].map(async (node) => {
+  const _nodes = data.flat();
+  
+  const nodesWithResources = await _nodes.map(async (node) => {
     try {
       node.resourcesUsed = await getNodeUsedResources(node.nodeID);
       node.resources = node.resourcesTotal;

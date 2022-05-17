@@ -107,6 +107,12 @@ export default {
 
       const contracts = await getActiveContracts(this.$store.state.api, nodeId);
       if (contracts.length > 0) {
+        this.$toasted.show(
+          `node ${nodeId} has ${contracts.length} active contracts`,
+          {
+            type: "error",
+          }
+        );
         console.log(`node ${nodeId} has ${contracts.length} active contracts`);
         this.loading = false;
       } else {

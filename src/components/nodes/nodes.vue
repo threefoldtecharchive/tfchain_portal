@@ -43,7 +43,7 @@
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Certification Type</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.certificationType }}</span>
+                  <span>{{ item.certification }}</span>
                 </v-flex>
               </v-row>
               <v-row>

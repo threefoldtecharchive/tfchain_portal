@@ -8,9 +8,9 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "@polkadot/api": "^6.5.2",
-    "@polkadot/extension-dapp": "^0.40.4",
-    "@polkadot/ui-keyring": "^0.86.2",
+    "@open-wc/webpack-import-meta-loader": "^0.4.7",
+    "@polkadot/api": "^8.10.1",
+    "@polkadot/extension-dapp": "^0.44.1",
     "axios": "^0.24.0",
     "blakejs": "^1.1.1",
     "core-js": "^3.6.5",

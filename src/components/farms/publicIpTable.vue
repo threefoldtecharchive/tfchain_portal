@@ -41,7 +41,7 @@
               >
                 <td>{{ decodeHex(ip.ip) }}</td>
                 <td>{{ decodeHex(ip.gateway) }}</td>
-                <td>{{ ip.contract_id }}</td>
+                <td>{{ ip.contractId }}</td>
                 <td>
                   <v-progress-circular
                     v-if="loadingDelete"

@@ -40,19 +40,19 @@
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Linked Twin ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.twin_id }}</span>
+                  <span>{{ item.twinId }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left pr-2">Certification Type</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.certification_type }}</span>
+                  <span>{{ item.certification }}</span>
                 </v-flex>
               </v-row>
               <v-row>
                 <v-flex xs3 class="text-left">Linked pricing Policy ID</v-flex>
                 <v-flex class="text-truncate font-weight-bold">
-                  <span>{{ item.pricing_policy_id }}</span>
+                  <span>{{ item.pricingPolicyId }}</span>
                 </v-flex>
               </v-row>
 
@@ -87,7 +87,7 @@
 
               <v-row>
                 <PublicIPTable
-                  :ips="item.public_ips" 
+                  :ips="item.publicIps" 
                   :deleteIP="deletePublicIP"
                   :loadingDelete="loadingDeleteIP"
                   :createIP="createPublicIP"
@@ -172,9 +172,9 @@ export default {
       headers: [
         { text: 'Farm ID', value: 'id' },
         { text: 'Farm name', value: 'name' },
-        { text: 'Linked Twin ID', value: 'twin_id' },
-        { text: 'Certification type', value: 'certification_type' },
-        { text: 'Pricing Policy ID', value: 'pricing_policy_id' },
+        { text: 'Linked Twin ID', value: 'twinId' },
+        { text: 'Certification type', value: 'certification' },
+        { text: 'Pricing Policy ID', value: 'pricingPolicyId' },
       ],
     }
   },

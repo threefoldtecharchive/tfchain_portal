@@ -68,7 +68,7 @@
             <p>IP: {{ decodeHex(twin.ip) }}</p>
           </strong>
           <strong>
-            <p>Address: {{ twin.account_id }}</p>
+            <p>Address: {{ twin.accountId }}</p>
           </strong>
         </v-card-text>
         <v-icon class="pencil" @click="openEditTwin=true">mdi-account-edit</v-icon>

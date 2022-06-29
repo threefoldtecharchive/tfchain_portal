@@ -18,6 +18,7 @@ export async function getNodesByFarmID(api, farms) {
     try {
       node.resourcesUsed = await getNodeUsedResources(node.nodeID);
       node.resources = node.resourcesTotal;
+      node.certification = node.certification ? null : 'diy'
     } catch (error) {
       node.resourcesUsed = {
         sru: 0,

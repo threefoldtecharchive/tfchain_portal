@@ -73,10 +73,10 @@ export async function getRentStatus(api, nodeID, currentTwinID) {
 
   const activeRentContracts = data.toJSON();
 
-  if (activeRentContracts.contract_id === 0) {
+  if (activeRentContracts.contractId === 0) {
     return "free";
   } else {
-    if (activeRentContracts.twin_id == currentTwinID) {
+    if (activeRentContracts.twinId == currentTwinID) {
       return "yours";
     } else {
       return "taken";
@@ -120,7 +120,8 @@ export function countPrice(prices, node) {
 
 export async function calDiscount(api, address, pricing, price) {
   // discount for Dedicated Nodes
-  const discount = pricing.discount_for_dedicated_nodes;
+  const discount = pricing.discountForDedicationNodes;
+  console.log(pricing)
 
   let totalPrice = price - price * (discount / 100);
 
@@ -205,7 +206,7 @@ export async function getDNodes(api, address) {
       nodeId: node.nodeID,
       price: price,
       discount: discount,
-      applyedDiscount: {first: pricing.discount_for_dedicated_nodes, second: discountLevel },
+      applyedDiscount: {first: pricing.discountForDedicationNodes, second: discountLevel },
       location: {
         country: node.country,
         city: node.city,

@@ -6,7 +6,7 @@ import { hex2a } from './util'
 export async function getFarm (api, twinID) {
   const farms = await api.query.tfgridModule.farms.entries()
   const twinFarms = farms.filter(farm => {
-    if (farm[1].toJSON().twin_id === twinID) {
+    if (farm[1].toJSON().twinId === twinID) {
       return farm
     }
   })
@@ -78,7 +78,7 @@ export async function farmerAcceptedTermsAndConditions (api, address, documentLi
   const tcs = await api.query.tfgridModule.farmersTermsAndConditions(address)
   const parsedTcs = tcs.toJSON()
 
-  return parsedTcs.filter(tc => hex2a(tc.document_link) === documentLink && hex2a(tc.document_hash) === documentHash).length > 0
+  return parsedTcs.filter(tc => hex2a(tc.documentLink) === documentLink && hex2a(tc.documentLash) === documentHash).length > 0
 }
 
 export async function deleteNode (address, api, nodeId, callback) {
